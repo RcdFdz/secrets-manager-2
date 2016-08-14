@@ -33,7 +33,8 @@ def print_decrypt_content():
 	key = input('Introduce key: ' )
 	content = construct_dict()
 	os.system("echo '%s' | pbcopy" % content[key])
-	print(content[key])
+	output = input('Password copyed to clipboard.\nShow password? (N/y): ' )
+	if output.lower() == 'y': print(content[key])
 
 def add_content(key,value):
 	old_content = str(decrypt_content())
