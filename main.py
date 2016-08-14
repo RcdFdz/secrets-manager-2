@@ -30,12 +30,18 @@ def decrypt_content():
 	return  gpg.decrypt(file.read())
 
 def print_decrypt_content():
-	print(decrypt_content())
+	key = input('Introduce key: ' )
+	content = construct_dict()
+	os.system("echo '%s' | pbcopy" % content[key])
+	print(content[key])
 
 def add_content(key,value):
 	old_content = str(decrypt_content())
 	new_content = old_content + '\n' + key + '\n' + value
-	encrypt_content(new_content)
+	if check_keys(key):
+		print("The key exist, please use other")
+	else:
+		encrypt_content(new_content)
 
 def open_read_file(file):
 	file = open('secrets', 'a+')
@@ -45,6 +51,22 @@ def open_read_file(file):
 def write_in_file(file,content):
 	file.write(content)
 	file.close()
+
+def check_keys(new_key):
+	return new_key in construct_dict()
+
+def show_keys():
+	for k,v in construct_dict().items():
+		print(k)
+
+def construct_dict():
+	content = str(decrypt_content()).split('\n')
+	dictionary = {}
+	index = 0
+	while index < (len(content)):
+		dictionary[content[index]] = content[index+1]
+		index = index + 2
+	return dictionary
 
 def initialize():
 	file  = open('secrets', 'w+')
@@ -60,24 +82,14 @@ def interactive():
 	value = input('Introduce a value: ')
 	add_content(key,value)
 
-def construct_dict():
-	content = str(decrypt_content()).split('\n')
-	print(content)
-	dictionary = {}
-	index = 0
-	while index < (len(content)):
-		dictionary[content[index]] = content[index+1]
-		index = index + 2
-	return dictionary
-
 def main(argv):
 	if os.path.isfile(FILE):
-		option = int(input('\t1: Add Pair\n\t2: Decrypt\n\t3: Show dict\nChoose: '))
+		option = int(input('\t1: Add Pair\n\t2: Decrypt\n\t3: Show Keys\nChoose: '))
 		switcher = {
 			0: lambda: '',
         		1: interactive,
         		2: print_decrypt_content,
-        		3: construct_dict,
+        		3: show_keys,
     		}
 		# Get the function from switcher dictionary
 		func = switcher.get(option, lambda: 'nothing')
