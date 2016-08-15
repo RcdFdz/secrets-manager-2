@@ -1,11 +1,11 @@
 ##
 #TODO:
 # verificar ruta GPG automàticamente
-# evitar elementos repetidos en el diccionario
 ##
 import gnupg
 import sys
 import os.path
+import glob
 
 BINARY = '/usr/local/bin/gpg'
 GPG_DIR = '~/.gnupg/'
@@ -14,11 +14,19 @@ FILE = 'secrets'
 gpg=gnupg.GPG(binary=BINARY,homedir=GPG_DIR)
 
 def get_keys():
-	keys=gpg.list_keys()
+	files = glob.glob('./pub-keys/*.asc')
+	keys_data = ''
+	for name in files:
+		try:
+			with open(name) as file:
+				 keys_data+=str(file.read())
+		except IOError as exc:
+			if exc.errno != errno.EISDIR: # Do not fail if a directory is found, just ignore it.
+				raise # Propagate other kinds of IOError.
+	import_result = gpg.import_keys(keys_data)
 	fprints=[]
-	for key in keys:
-		if key['type'] == 'pub' and key['keyid']!='76D78F0500D026C4':
-			fprints.append(str(key['fingerprint']))
+	for key in import_result.results:
+		fprints.append(str(key['fingerprint']))
 	return fprints
 
 def encrypt_content(content):
@@ -85,12 +93,13 @@ def interactive():
 
 def main(argv):
 	if os.path.isfile(FILE):
-		option = int(input('\t1: Add Pair\n\t2: Decrypt\n\t3: Show Keys\nChoose: '))
+		option = int(input('\t1: Read Files\n\t2: Add Pair\n\t3: Decrypt\n\t4: Show Keys\nChoose: '))
 		switcher = {
 			0: lambda: '',
-        		1: interactive,
-        		2: print_decrypt_content,
-        		3: show_keys,
+			1: get_keys2,
+        		2: interactive,
+        		3: print_decrypt_content,
+        		4: show_keys,
     		}
 		# Get the function from switcher dictionary
 		func = switcher.get(option, lambda: 'nothing')
