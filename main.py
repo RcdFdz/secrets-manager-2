@@ -92,18 +92,23 @@ def interactive():
 	value = input('Introduce a value: ')
 	add_content(key,value)
 
+def exit():
+	sys.exit(0)
+
 def main(argv):
 	if os.path.isfile(FILE):
-		option = int(input('\t1: Add Pair\n\t2: Decrypt\n\t3: Show Keys\nChoose: '))
 		switcher = {
 			0: lambda: '',
         		1: interactive,
         		2: print_decrypt_content,
         		3: show_keys,
+        		4: exit
     		}
-		# Get the function from switcher dictionary
+		option = int(input('\t1: Add Key/Value Pair\n\t2: Decrypt Key/Value Pair\n\t3: Show Keys\n\t4: Exit\nChoose: '))
+		while option not in range(1, len(switcher)):
+			option = int(input('Choose correct option: ' ))
+
 		func = switcher.get(option, lambda: 'nothing')
-		# Execute the function
 		return func()
 	else:
 		initialize()
