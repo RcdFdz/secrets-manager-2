@@ -1,7 +1,3 @@
-##
-#TODO:
-# verificar ruta GPG automàticamente
-##
 import gnupg
 import sys
 import os.path
@@ -38,11 +34,16 @@ def decrypt_content():
 	return  gpg.decrypt(file.read())
 
 def print_decrypt_content():
-	key = input('Introduce key: ' )
+	key = input("Introduce key name or 'key' for list all keys: ")
+	while key.lower()=='key':
+		show_keys()
+		key = input("Introduce key name or 'key' for list all keys: ")
+
 	content = construct_dict()
 	os.system("echo '%s' | pbcopy" % content[key])
 	output = input('Password copyed to clipboard.\nShow password? (N/y): ' )
 	if output.lower() == 'y': print(content[key])
+
 
 def add_content(key,value):
 	old_content = str(decrypt_content())
@@ -93,13 +94,12 @@ def interactive():
 
 def main(argv):
 	if os.path.isfile(FILE):
-		option = int(input('\t1: Read Files\n\t2: Add Pair\n\t3: Decrypt\n\t4: Show Keys\nChoose: '))
+		option = int(input('\t1: Add Pair\n\t2: Decrypt\n\t3: Show Keys\nChoose: '))
 		switcher = {
 			0: lambda: '',
-			1: get_keys2,
-        		2: interactive,
-        		3: print_decrypt_content,
-        		4: show_keys,
+        		1: interactive,
+        		2: print_decrypt_content,
+        		3: show_keys,
     		}
 		# Get the function from switcher dictionary
 		func = switcher.get(option, lambda: 'nothing')
