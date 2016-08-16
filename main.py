@@ -34,20 +34,23 @@ def decrypt_content():
 	return  gpg.decrypt(file.read())
 
 def print_decrypt_content():
-	key = input("Introduce key name or 'key' for list all keys: ")
-	while key.lower()=='key':
+	key = input("Introduce the identifier name or 'list' for list all identifiers: ")
+	while key.lower()=='list':
 		show_keys()
-		key = input("Introduce key name or 'key' for list all keys: ")
+		key = input("Introduce the identifier name or 'list' for list all identifiers: ")
 
 	content = construct_dict()
-	os.system("echo '%s' | pbcopy" % content[key])
-	output = input('Password copyed to clipboard.\nShow password? (N/y): ' )
-	if output.lower() == 'y': print(content[key])
+	output = input('Copy Key or Value to clipboard? (N/k/v): ' )
+	if output.lower() == 'k': os.system("echo '%s' | pbcopy" % content[key][0])
+	if output.lower() == 'v': os.system("echo '%s' | pbcopy" % content[key][1])
+	output = input('Show key/value pair? (N/y): ' )
+	if output.lower() == 'y': print('Key: ',content[key][0],'\nValue: ',content[key][1])
 
 
-def add_content(key,value):
+def add_content(id, key,value):
 	old_content = str(decrypt_content())
-	new_content = old_content + '\n' + key + '\n' + value
+	new_content = old_content + '\n--!--\n' + id + '\n--!--\n' + key + '\n--!--\n' + value
+	print(old_content)
 	if check_keys(key):
 		print("The key exist, please use other")
 	else:
@@ -70,27 +73,29 @@ def show_keys():
 		print(k)
 
 def construct_dict():
-	content = str(decrypt_content()).split('\n')
+	content = str(decrypt_content()).split('\n--!--\n')
 	dictionary = {}
 	index = 0
 	while index < (len(content)):
-		dictionary[content[index]] = content[index+1]
-		index = index + 2
+		dictionary[content[index]] = [content[index+1],content[index+2]]
+		index = index + 3
 	return dictionary
 
 def initialize():
 	file  = open('secrets', 'w+')
-	key = input('Introduce a key: ')
-	value = input('Introduce a value: ')
-	kv = key+'\n'+value
+	id = input('Introduce an Identifier: ')
+	key = input('Introduce a Key: ')
+	value = input('Introduce a Value: ')
+	kv = id + '\n--!--\n' + key + '\n--!--\n' + value
 	encrypt_content(kv)
 
 def interactive():
 	file  = open('secrets', 'a+')
 	kv = {}
-	key = input('Introduce a key: ')
-	value = input('Introduce a value: ')
-	add_content(key,value)
+	id = input('Introduce an Identifier: ')
+	key = input('Introduce a Key: ')
+	value = input('Introduce a Value: ')
+	add_content(id, key,value)
 
 def exit():
 	sys.exit(0)
