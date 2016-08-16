@@ -40,12 +40,11 @@ def print_decrypt_content():
 		key = input("Introduce the identifier name or 'list' for list all identifiers: ")
 
 	content = construct_dict()
-	output = input('Copy Key or Value to clipboard? (N/k/v): ' )
+	output = input('Copy Key (k) or Value (v) to clipboard? (N/k/v): ' )
 	if output.lower() == 'k': os.system("echo '%s' | pbcopy" % content[key][0])
 	if output.lower() == 'v': os.system("echo '%s' | pbcopy" % content[key][1])
 	output = input('Show key/value pair? (N/y): ' )
 	if output.lower() == 'y': print('Key: ',content[key][0],'\nValue: ',content[key][1])
-
 
 def add_content(id, key,value):
 	old_content = str(decrypt_content())
@@ -89,7 +88,7 @@ def initialize():
 	kv = id + '\n--!--\n' + key + '\n--!--\n' + value
 	encrypt_content(kv)
 
-def interactive():
+def add_menu():
 	file  = open('secrets', 'a+')
 	kv = {}
 	id = input('Introduce an Identifier: ')
@@ -104,7 +103,7 @@ def main(argv):
 	if os.path.isfile(FILE):
 		switcher = {
 			0: lambda: '',
-        		1: interactive,
+        		1: add_menu,
         		2: print_decrypt_content,
         		3: show_keys,
         		4: exit
@@ -116,7 +115,17 @@ def main(argv):
 		func = switcher.get(option, lambda: 'nothing')
 		return func()
 	else:
-		initialize()
+		switcher = {
+			0: lambda: '',
+        		1: initialize,
+        		2: exit
+    		}
+		option = int(input('\t1: Add Key/Value Pair\n\t2: Exit\nChoose: '))
+		while option not in range(1, len(switcher)):
+			option = int(input('Choose correct option: ' ))
+
+		func = switcher.get(option, lambda: 'nothing')
+		return func()
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
