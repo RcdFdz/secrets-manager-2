@@ -2,6 +2,7 @@ import gnupg
 import sys
 import os.path
 import glob
+import argparse
 
 BINARY = '/usr/local/bin/gpg'
 GPG_DIR = '~/.gnupg/'
@@ -44,8 +45,8 @@ def print_decrypt_content():
 
 	content = construct_dict()
 	output = input('Copy Key (k) or Value (v) to clipboard? (N/k/v): ' )
-	if output.lower() == 'k': os.system("echo '%s' | pbcopy" % content[key][0])
-	if output.lower() == 'v': os.system("echo '%s' | pbcopy" % content[key][1])
+	if output.lower() == 'k': os.system("echo '{}' | pbcopy".format(content[key][0]))
+	if output.lower() == 'v': os.system("echo '{}' | pbcopy".format(content[key][1]))
 	output = input('Show key/value pair? (N/y): ' )
 	if output.lower() == 'y': print('Key: ',content[key][0],'\nValue: ',content[key][1])
 
@@ -98,10 +99,7 @@ def add_menu():
 	value = input('Introduce a Value: ')
 	add_content(id, key,value)
 
-def exit():
-	sys.exit(0)
-
-def main(argv):
+def interactive_menu():
 	if os.path.isfile(FILE):
 		switcher = {
 			0: lambda: '',
@@ -118,7 +116,7 @@ def main(argv):
 		func = switcher.get(option, lambda: 'nothing')
 		return func()
 	else:
-		print('The file ', FILE,' has not been found')
+		print('The file', FILE,'has not been found')
 		switcher = {
 			0: lambda: '',
         		1: initialize,
@@ -130,6 +128,18 @@ def main(argv):
 
 		func = switcher.get(option, lambda: 'nothing')
 		return func()
+
+def exit():
+	sys.exit(0)
+
+def main(argv):
+	parser = argparse.ArgumentParser(description='Manager for sensible information under PGP')
+	parser.add_argument("-i","--interactive", help="display the interactive menu for pwd-manager",
+		action="store_true")
+	parser.add_argument("-k","--key", metavar='identifier', help="display the key for the given identifier")
+	parser.add_argument("-v","--value", metavar='identifier', help="display the value for the given identifier")
+	args = parser.parse_args()
+	if args.interactive: interactive_menu()
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
