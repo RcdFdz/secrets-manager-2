@@ -33,6 +33,9 @@ def decrypt_content():
 	file = open_read_file(FILE)
 	return  gpg.decrypt(file.read())
 
+def update_keys():
+	encrypt_content(str(decrypt_content()))
+
 def print_decrypt_content():
 	key = input("Introduce the identifier name or 'list' for list all identifiers: ")
 	while key.lower()=='list':
@@ -49,7 +52,6 @@ def print_decrypt_content():
 def add_content(id, key,value):
 	old_content = str(decrypt_content())
 	new_content = old_content + '\n--!--\n' + id + '\n--!--\n' + key + '\n--!--\n' + value
-	print(old_content)
 	if check_keys(key):
 		print("The key exist, please use other")
 	else:
@@ -91,7 +93,7 @@ def initialize():
 def add_menu():
 	file  = open('secrets', 'a+')
 	kv = {}
-	id = input('Introduce an Identifier: ')
+	id = input('Introduce an Identifier: ').replace(' ','_')
 	key = input('Introduce a Key: ')
 	value = input('Introduce a Value: ')
 	add_content(id, key,value)
@@ -106,15 +108,17 @@ def main(argv):
         		1: add_menu,
         		2: print_decrypt_content,
         		3: show_keys,
-        		4: exit
+        		4: update_keys,
+        		5: exit
     		}
-		option = int(input('\t1: Add Key/Value Pair\n\t2: Decrypt Key/Value Pair\n\t3: Show Keys\n\t4: Exit\nChoose: '))
+		option = int(input('\t1: Add Key/Value Pair\n\t2: Decrypt Key/Value Pair\n\t3: Show Keys\n\t4: Update public keys\n\t5: Exit\nChoose: '))
 		while option not in range(1, len(switcher)):
 			option = int(input('Choose correct option: ' ))
 
 		func = switcher.get(option, lambda: 'nothing')
 		return func()
 	else:
+		print('The file ', FILE,' has not been found')
 		switcher = {
 			0: lambda: '',
         		1: initialize,
