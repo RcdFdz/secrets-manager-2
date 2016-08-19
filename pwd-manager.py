@@ -37,17 +37,17 @@ def decrypt_content():
 def update_keys():
 	encrypt_content(str(decrypt_content()))
 
-def get_key_value(identifier, option):
+def get_key_value(id, option):
 	content = construct_dict()
-	if option.lower() == 'all': print('Key: ',content[identifier][0],'\nValue: ',content[identifier][1])
-	if option.lower() == 'key': print(content[identifier][0])
-	if option.lower() == 'value': print(content[identifier][1])
+	if option.lower() == 'all': print('Key: ',content[id][0],'\nValue: ',content[id][1])
+	if option.lower() == 'key': print(content[id][0])
+	if option.lower() == 'value': print(content[id][1])
 
 def print_decrypt_content():
-	key = input("Introduce the identifier name or 'list' for list all identifiers: ")
-	while key.lower()=='list':
+	id = input("Introduce the identifier name or 'list' for list all identifiers: ")
+	while id.lower()=='list':
 		show_keys()
-		key = input("Introduce the identifier name or 'list' for list all identifiers: ")
+		id = input("Introduce the identifier name or 'list' for list all identifiers: ")
 
 	content = construct_dict()
 	output = input('Copy Key (k) or Value (v) to clipboard? (N/k/v): ' )
@@ -69,7 +69,7 @@ def open_read_file(file):
 	file.seek(0)
 	return file
 
-def write_in_file(file,content):
+def write_in_file(file, content):
 	file.write(content)
 	file.close()
 
@@ -142,10 +142,10 @@ def main(argv):
 	parser = argparse.ArgumentParser(description='Manager for sensible information under PGP')
 	parser.add_argument("-i","--interactive", help="display the interactive menu for pwd-manager",
 		action="store_true")
-	parser.add_argument("-l","--list", help="display the value for the given identifier", action="store_true")
-	parser.add_argument("-k","--key", metavar='identifier', help="display the key for the given identifier")
-	parser.add_argument("-v","--value", metavar='identifier', help="display the value for the given identifier")
-	parser.add_argument("-a","--all", metavar='identifier', help="display the key/value for the given identifier")
+	parser.add_argument("-l","--list", help="list all the stored identifiers", action="store_true")
+	parser.add_argument("-k","--key", metavar='identifier', help="return the key for the given identifier")
+	parser.add_argument("-v","--value", metavar='identifier', help="return the value for the given identifier")
+	parser.add_argument("-a","--all", metavar='identifier', help="display the key and value pair for the given identifier")
 	args = parser.parse_args()
 	if args.interactive: interactive_menu()
 	elif args.list: show_keys()
