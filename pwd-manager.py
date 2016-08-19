@@ -37,6 +37,12 @@ def decrypt_content():
 def update_keys():
 	encrypt_content(str(decrypt_content()))
 
+def get_key_value(identifier, option):
+	content = construct_dict()
+	if option.lower() == 'all': print('Key: ',content[identifier][0],'\nValue: ',content[identifier][1])
+	if option.lower() == 'key': print(content[identifier][0])
+	if option.lower() == 'value': print(content[identifier][1])
+
 def print_decrypt_content():
 	key = input("Introduce the identifier name or 'list' for list all identifiers: ")
 	while key.lower()=='list':
@@ -136,10 +142,16 @@ def main(argv):
 	parser = argparse.ArgumentParser(description='Manager for sensible information under PGP')
 	parser.add_argument("-i","--interactive", help="display the interactive menu for pwd-manager",
 		action="store_true")
+	parser.add_argument("-l","--list", help="display the value for the given identifier", action="store_true")
 	parser.add_argument("-k","--key", metavar='identifier', help="display the key for the given identifier")
 	parser.add_argument("-v","--value", metavar='identifier', help="display the value for the given identifier")
+	parser.add_argument("-a","--all", metavar='identifier', help="display the key/value for the given identifier")
 	args = parser.parse_args()
 	if args.interactive: interactive_menu()
+	elif args.list: show_keys()
+	elif args.key: get_key_value(args.key, 'key')
+	elif args.value: get_key_value(args.value, 'value')
+	elif args.all: get_key_value(args.all, 'all')
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
