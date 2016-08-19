@@ -43,18 +43,26 @@ def get_key_value(id, option):
 	if option.lower() == 'key': print(content[id][0])
 	if option.lower() == 'value': print(content[id][1])
 
-def print_decrypt_content():
+def id_or_list():
 	id = input("Introduce the identifier name or 'list' for list all identifiers: ")
-	while id.lower()=='list':
-		show_keys()
-		id = input("Introduce the identifier name or 'list' for list all identifiers: ")
+	while id.lower()=='list' or not check_keys(id) :
+		if id.lower()=='list' :
+			show_keys()
+			id = input("Introduce the identifier name or 'list' for list all identifiers: ")
+
+		if not check_keys(id):
+			id = input("Introduce a valid identifier name or 'list' for list all identifiers: ")
+	return id
+
+def print_decrypt_content():
+	id = id_or_list()
 
 	content = construct_dict()
 	output = input('Copy Key (k) or Value (v) to clipboard? (N/k/v): ' )
-	if output.lower() == 'k': os.system("echo '{}' | pbcopy".format(content[key][0]))
-	if output.lower() == 'v': os.system("echo '{}' | pbcopy".format(content[key][1]))
+	if output.lower() == 'k': os.system("echo '{}' | pbcopy".format(content[id][0]))
+	if output.lower() == 'v': os.system("echo '{}' | pbcopy".format(content[id][1]))
 	output = input('Show key/value pair? (N/y): ' )
-	if output.lower() == 'y': print('Key: ',content[key][0],'\nValue: ',content[key][1])
+	if output.lower() == 'y': print('Key:',content[id][0],'\nValue:',content[id][1])
 
 def add_content(id, key,value):
 	old_content = str(decrypt_content())
@@ -63,6 +71,15 @@ def add_content(id, key,value):
 		print("The key exist, please use other")
 	else:
 		encrypt_content(new_content)
+
+def modify_content():
+	content = construct_dict()
+	id = id_or_list()
+	content.pop(id, None)
+	key = input("Introduce a key: ")
+	value = input("Introduce a value: ")
+	add_content(id, key, value)
+	print("Done!")
 
 def open_read_file(file):
 	file = open('secrets', 'a+')
@@ -73,8 +90,8 @@ def write_in_file(file, content):
 	file.write(content)
 	file.close()
 
-def check_keys(new_key):
-	return new_key in construct_dict()
+def check_keys(id):
+	return id in construct_dict()
 
 def show_keys():
 	for k,v in construct_dict().items():
@@ -110,12 +127,13 @@ def interactive_menu():
 		switcher = {
 			0: lambda: '',
         		1: add_menu,
-        		2: print_decrypt_content,
-        		3: show_keys,
-        		4: update_keys,
-        		5: exit
+        		2: modify_content,
+        		3: print_decrypt_content,
+        		4: show_keys,
+        		5: update_keys,
+        		6: exit
     		}
-		option = int(input('\t1: Add Key/Value Pair\n\t2: Decrypt Key/Value Pair\n\t3: Show Keys\n\t4: Update public keys\n\t5: Exit\nChoose: '))
+		option = int(input('\t1: Add Key/Value Pair\n\t2: Modify/Delete Key/Value Pair\n\t3: Decrypt Key/Value Pair\n\t4: Show Keys\n\t5: Update public keys\n\t6: Exit\nChoose: '))
 		while option not in range(1, len(switcher)):
 			option = int(input('Choose correct option: ' ))
 
@@ -152,6 +170,7 @@ def main(argv):
 	elif args.key: get_key_value(args.key, 'key')
 	elif args.value: get_key_value(args.value, 'value')
 	elif args.all: get_key_value(args.all, 'all')
+	else: interactive_menu()
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
