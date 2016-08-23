@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 import gnupg
 import sys
 import os.path
@@ -139,7 +140,7 @@ def interactive_menu():
 		func = switcher.get(option, lambda: 'nothing')
 		return func()
 	else:
-		print('The file', FILE,'has not been found')
+		print('The file', FILE,'has not been found, using -i/--interactive argument.')
 		switcher = {
 			0: lambda: '',
         		1: initialize,
@@ -169,7 +170,8 @@ def main(argv):
 	elif args.key: get_key_value(args.key, 'key')
 	elif args.value: get_key_value(args.value, 'value')
 	elif args.all: get_key_value(args.all, 'all')
-	else: interactive_menu()
+	elif not os.path.isfile(FILE): interactive_menu()
+	else: parser.print_help()
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
