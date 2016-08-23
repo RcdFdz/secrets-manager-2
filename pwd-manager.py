@@ -39,10 +39,10 @@ def update_keys():
 	encrypt_content(str(decrypt_content()))
 
 def get_key_value(id, option):
-	content = construct_dict()
-	if option.lower() == 'all': print('Key: ',content[id][0],'\nValue: ',content[id][1])
-	if option.lower() == 'key': print(content[id][0])
-	if option.lower() == 'value': print(content[id][1])
+	json_content = json.loads(str(decrypt_content()))
+	if option.lower() == 'all': print('Key:',json_content[id][0],'\nValue:',json_content[id][1])
+	if option.lower() == 'key': print(json_content[id][0])
+	if option.lower() == 'value': print(json_content[id][1])
 
 def id_or_list():
 	json_content = json.loads(str(decrypt_content()))
