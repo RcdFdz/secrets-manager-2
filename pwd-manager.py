@@ -29,9 +29,7 @@ def get_keys():
 
 def encrypt_content(json_content):
 	finger_prints = get_keys()
-	content = json.dumps(json_content, indent=4, sort_keys=True)
-	print(content)
-	return gpg.encrypt(content, *finger_prints, always_trust=True, output=FILE)
+	return gpg.encrypt(json_content, *finger_prints, always_trust=True, output=FILE)
 
 def decrypt_content():
 	file = open_read_file(FILE)
@@ -115,8 +113,7 @@ def initialize():
 	id = input('Introduce an Identifier: ')
 	key = input('Introduce a Key: ')
 	value = input('Introduce a Value: ')
-	kv = {id : [ key , value ]}
-	jkv = json.loads(json.dumps(kv))
+	jkv = json.dumps({id : [ key , value ]}, indent=4, sort_keys=True)
 	encrypt_content(jkv)
 
 def add_menu():
