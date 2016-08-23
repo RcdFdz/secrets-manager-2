@@ -45,43 +45,47 @@ def get_key_value(id, option):
 	if option.lower() == 'value': print(content[id][1])
 
 def id_or_list():
-	id = input("Introduce the identifier name or 'list' for list all identifiers: ")
-	while id.lower()=='list' or not check_keys(id) :
+	json_content = json.loads(str(decrypt_content()))
+	id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
+	while id.lower()=='list' or id not in json_content:
 		if id.lower()=='list' :
 			show_keys()
-			id = input("Introduce the identifier name or 'list' for list all identifiers: ")
+			id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
 
-		if not check_keys(id):
-			id = input("Introduce a valid identifier name or 'list' for list all identifiers: ")
+		if id not in json_content:
+			id = input("Introduce a valid identifier name or 'list' for list all identifiers: ").replace(' ','_')
 	return id
 
 def print_decrypt_content():
 	id = id_or_list()
-
-	content = construct_dict()
+	json_content = json.loads(str(decrypt_content()))
 	output = input('Copy Key (k) or Value (v) to clipboard? (N/k/v): ' )
-	if output.lower() == 'k': os.system("echo '{}' | pbcopy".format(content[id][0]))
-	if output.lower() == 'v': os.system("echo '{}' | pbcopy".format(content[id][1]))
+	if output.lower() == 'k': os.system("echo '{}' | pbcopy".format(json_content[id][0]))
+	if output.lower() == 'v': os.system("echo '{}' | pbcopy".format(json_content[id][1]))
 	output = input('Show key/value pair? (N/y): ' )
-	if output.lower() == 'y': print('Key:',content[id][0],'\nValue:',content[id][1])
+	if output.lower() == 'y': print('Key:',json_content[id][0],'\nValue:',json_content[id][1])
 
-def add_content(id, key,value):
-	old_content = str(decrypt_content())
-	new_content = old_content + '\n--!--\n' + id + '\n--!--\n' + key + '\n--!--\n' + value
-	if check_keys(key):
-		print("The key exist, please use other")
-	else:
-		encrypt_content(new_content)
+def add_content(id, key, value, json_content):
+	json_content[id] = [key, value]
+	jkv = json.dumps(json_content, sort_keys=True)
+	encrypt_content(jkv)
 
 def modify_content():
-	content = construct_dict()
 	id = id_or_list()
-	content.pop(id, None)
+	json_content = json.loads(str(decrypt_content()))
+	json_content.pop(id, None)
+
+	print("Leave key/value without values for delete")
 	key = input("Introduce a key: ")
 	value = input("Introduce a value: ")
-	if key != '' and value != '': add_content(id, key, value)
-	print(key,value)
-	print("Done!")
+
+	if key != '' and value != '':
+		add_content(id, key, value, json_content)
+		print("Done! Identifier " + id +" has been modified")
+	else:
+		jkv = json.dumps(json_content, sort_keys=True)
+		encrypt_content(jkv)
+		print("Done! Identifier " + id +" has been deleted")
 
 def open_read_file(file):
 	file = open('secrets', 'a+')
@@ -92,37 +96,30 @@ def write_in_file(file, content):
 	file.write(content)
 	file.close()
 
-def check_keys(id):
-	return id in construct_dict()
-
 def show_keys():
-	for k,v in construct_dict().items():
-		print(k)
-
-def construct_dict():
-	content = str(decrypt_content()).split('\n--!--\n')
-	dictionary = {}
-	index = 0
-	while index < (len(content)):
-		dictionary[content[index]] = [content[index+1],content[index+2]]
-		index = index + 3
-	return dictionary
+	json_content = json.loads(str(decrypt_content()))
+	for key in sorted(json_content.keys()):
+		print(key)
 
 def initialize():
 	file  = open('secrets', 'w+')
 	id = input('Introduce an Identifier: ')
 	key = input('Introduce a Key: ')
 	value = input('Introduce a Value: ')
-	jkv = json.dumps({id : [ key , value ]}, indent=4, sort_keys=True)
+	jkv = json.dumps({id : [ key , value ]}, sort_keys=True)
 	encrypt_content(jkv)
 
 def add_menu():
 	file  = open('secrets', 'a+')
-	kv = {}
-	id = input('Introduce an Identifier: ').replace(' ','_')
+	json_content = json.loads(str(decrypt_content()))
+
+	id = input('Please Introduce an Identifier: ').replace(' ','_')
+	while (id in json_content):
+		id = input('This identifier exist. Please Introduce other Identifier: ').replace(' ','_')
+
 	key = input('Introduce a Key: ')
 	value = input('Introduce a Value: ')
-	add_content(id, key,value)
+	add_content(id, key, value, json_content)
 
 def interactive_menu():
 	if os.path.isfile(FILE):
