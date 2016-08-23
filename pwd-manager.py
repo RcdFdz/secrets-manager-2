@@ -3,6 +3,7 @@ import sys
 import os.path
 import glob
 import argparse
+import json
 
 BINARY = '/usr/local/bin/gpg'
 GPG_DIR = '~/.gnupg/'
@@ -26,8 +27,10 @@ def get_keys():
 		fprints.append(str(key['fingerprint']))
 	return fprints
 
-def encrypt_content(content):
+def encrypt_content(json_content):
 	finger_prints = get_keys()
+	content = json.dumps(json_content, indent=4, sort_keys=True)
+	print(content)
 	return gpg.encrypt(content, *finger_prints, always_trust=True, output=FILE)
 
 def decrypt_content():
@@ -78,7 +81,8 @@ def modify_content():
 	content.pop(id, None)
 	key = input("Introduce a key: ")
 	value = input("Introduce a value: ")
-	add_content(id, key, value)
+	if key != '' and value != '': add_content(id, key, value)
+	print(key,value)
 	print("Done!")
 
 def open_read_file(file):
@@ -111,8 +115,9 @@ def initialize():
 	id = input('Introduce an Identifier: ')
 	key = input('Introduce a Key: ')
 	value = input('Introduce a Value: ')
-	kv = id + '\n--!--\n' + key + '\n--!--\n' + value
-	encrypt_content(kv)
+	kv = {id : [ key , value ]}
+	jkv = json.loads(json.dumps(kv))
+	encrypt_content(jkv)
 
 def add_menu():
 	file  = open('secrets', 'a+')
