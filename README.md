@@ -21,16 +21,16 @@ The menu accepts:
 There is also the posibility to work without interactive mode, by using terminal arguments:
 
 ```
-➜  pwd-manager git:(master) ✗ python3 pwd-manager.py -h
+➜  secrets-manager-3 git:(master) ✗ python3 s-manager.py -h
 
-usage: pwd-manager.py [-h] [-i] [-l] [-k identifier] [-v identifier]
+usage: s-manager.py [-h] [-i] [-l] [-k identifier] [-v identifier]
                       [-a identifier]
 
 Manager for sensible information under PGP
 
 optional arguments:
   -h, --help            show this help message and exit
-  -i, --interactive     display the interactive menu for pwd-manager
+  -i, --interactive     display the interactive menu for s-manager
   -l, --list            list all the stored identifiers
   -k identifier, --key identifier
                         return the key for the given identifier
@@ -45,3 +45,7 @@ optional arguments:
 This projects requires python3 and GPG Suite version 2016.07 (https://gpgtools.org/) or greater.
 
 Also will be required to run `pip3 install -r requirements.txt`.
+
+### TO-DO
+
+* The application shouldn't ask for a gpg password before all the information required is given when a new Identifier is added.
