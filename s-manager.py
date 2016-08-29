@@ -104,7 +104,7 @@ def show_keys():
 
 def initialize():
 	file  = open('secrets', 'w+')
-	id = input('Introduce an Identifier: ')
+	id = input('Introduce an Identifier: ').replace(' ','_')
 	key = input('Introduce a Key: ')
 	value = input('Introduce a Value: ')
 	jkv = json.dumps({id : [ key , value ]}, sort_keys=True)

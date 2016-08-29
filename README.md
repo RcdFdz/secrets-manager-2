@@ -45,7 +45,3 @@ optional arguments:
 This projects requires python3 and GPG Suite version 2016.07 (https://gpgtools.org/) or greater.
 
 Also will be required to run `pip3 install -r requirements.txt`.
-
-### TO-DO
-
-* The application shouldn't ask for a gpg password before all the information required is given when a new Identifier is added.
