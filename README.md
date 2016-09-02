@@ -45,3 +45,10 @@ optional arguments:
 This projects requires python3 and GPG Suite version 2016.07 (https://gpgtools.org/) or greater.
 
 Also will be required to run `pip3 install -r requirements.txt`.
+
+### TODO
+
+* Add URL/Note field with key/value pair -> Key/value/note
+* Add option to modify Identifier
+* Add option to add directly from command a key/value/note
+* Modify ONLY identifier/key/value/note should be an option
