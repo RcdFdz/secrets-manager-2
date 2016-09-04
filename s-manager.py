@@ -42,11 +42,12 @@ def decrypt_content():
 def update_keys():
 	encrypt_content(str(decrypt_content()))
 
-def get_key_value(id, option):
+def get_key_value(args, option):
 	json_content = json.loads(str(decrypt_content()))
-	if option.lower() == 'all': print('Key:',json_content[id][0],'\nValue:',json_content[id][1])
-	if option.lower() == 'key': print(json_content[id][0])
-	if option.lower() == 'value': print(json_content[id][1])
+	if option.lower() == 'all':
+		for elem in json_content[args]:
+			print(elem)
+	if option.lower() == 'element': print(json_content[args[0]][int(args[1])-1])
 
 def id_or_list():
 	json_content = json.loads(str(decrypt_content()))
@@ -68,7 +69,7 @@ def print_decrypt_content():
 	output = input('Show values? (Y/n): ' )
 	if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
 		for e in range(0,size):
-			print('Element ' + str(e+1) +': \n\t' + str(json_content[id][e]))
+			print('Element ' + str(e+1) +':  ' + str(json_content[id][e]))
 	output = input('Copy any elemento to clipboard? (N/element number): ' )
 	if output.lower() != '' or output.lower() != 'n' or output.lower() != 'no': os.system("echo '{}' | pbcopy".format(json_content[id][int(output)-1]))
 
@@ -175,15 +176,13 @@ def main(argv):
 	parser.add_argument("-i","--interactive", help="display the interactive menu for pwd-manager",
 		action="store_true")
 	parser.add_argument("-l","--list", help="list all the stored identifiers", action="store_true")
-	parser.add_argument("-k","--key", metavar='identifier', help="return the key for the given identifier")
-	parser.add_argument("-v","--value", metavar='identifier', help="return the value for the given identifier")
+	parser.add_argument("-e","--element", nargs=2, metavar=('identifier','element_number'), help="return the element number for the given identifier")
 	parser.add_argument("-a","--all", metavar='identifier', help="display the key and value pair for the given identifier")
 	args = parser.parse_args()
 	if args.interactive: interactive_menu()
 	elif args.list: show_keys()
-	elif args.key: get_key_value(args.key, 'key')
-	elif args.value: get_key_value(args.value, 'value')
 	elif args.all: get_key_value(args.all, 'all')
+	elif args.note: get_key_value(args.note, 'note')
 	elif not os.path.isfile(FILE): interactive_menu()
 	else: parser.print_help()
 
