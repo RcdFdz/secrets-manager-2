@@ -33,7 +33,8 @@ def encrypt_content(json_content):
 	return gpg.encrypt(json_content, *finger_prints, always_trust=True, output=FILE)
 
 def decrypt_content():
-	file = open_read_file(FILE)
+	file = open('secrets', 'a+')
+	file.seek(0)
 	return  gpg.decrypt(file.read())
 
 def update_keys():
@@ -66,48 +67,51 @@ def print_decrypt_content():
 	output = input('Show key/value pair? (N/y): ' )
 	if output.lower() == 'y': print('Key:',json_content[id][0],'\nValue:',json_content[id][1])
 
-def add_content(id, key, value, json_content):
-	json_content[id] = [key, value]
-	jkv = json.dumps(json_content, sort_keys=True)
-	encrypt_content(jkv)
-
 def modify_content():
 	id = id_or_list()
+
 	json_content = json.loads(str(decrypt_content()))
+	size = len(json_content[id])
 	json_content.pop(id, None)
 
-	print("Leave key/value without values for delete")
-	key = input("Introduce a key: ")
-	value = input("Introduce a value: ")
+	print("Leave elements without value for delete")
+	arr = []
+	for e in range(1,size+1):
+		element = input('Element ' + str(e) +': ')
+		arr.append(element)
 
-	if key != '' and value != '':
-		add_content(id, key, value, json_content)
+	if all(x != '' for x in arr):
+		json_content[id] = arr
+		jkv = json.dumps(json_content, sort_keys=True)
+		encrypt_content(jkv)
 		print("Done! Identifier " + id +" has been modified")
+		print(jkv)
 	else:
 		jkv = json.dumps(json_content, sort_keys=True)
 		encrypt_content(jkv)
 		print("Done! Identifier " + id +" has been deleted")
-
-def open_read_file(file):
-	file = open('secrets', 'a+')
-	file.seek(0)
-	return file
-
-def write_in_file(file, content):
-	file.write(content)
-	file.close()
 
 def show_keys():
 	json_content = json.loads(str(decrypt_content()))
 	for key in sorted(json_content.keys()):
 		print(key)
 
-def initialize():
-	file  = open('secrets', 'w+')
-	id = input('Introduce an Identifier: ').replace(' ','_')
-	key = input('Introduce a Key: ')
-	value = input('Introduce a Value: ')
-	jkv = json.dumps({id : [ key , value ]}, sort_keys=True)
+def add_content(id, old_content = None):
+	size = int(input('Number of elements: '))
+	json_content = {}
+	arr = []
+
+	for e in range(1,size+1):
+		element = input('Element ' + str(e) +': ')
+		arr.append(element)
+
+	if old_content:
+			old_content[id] = arr
+			json_content = old_content
+	else:
+		json_content[id] = arr
+
+	jkv = json.dumps(json_content, sort_keys=True)
 	encrypt_content(jkv)
 
 def add_menu():
@@ -118,9 +122,12 @@ def add_menu():
 	while (id in json_content):
 		id = input('This identifier exist. Please Introduce other Identifier: ').replace(' ','_')
 
-	key = input('Introduce a Key: ')
-	value = input('Introduce a Value: ')
-	add_content(id, key, value, json_content)
+	json_content = add_content(id, json_content)
+
+def initialize():
+	file  = open('secrets', 'w+')
+	id = input('Please Introduce an Identifier: ').replace(' ','_')
+	json_content = add_content(id)
 
 def interactive_menu():
 	if os.path.isfile(FILE):
@@ -146,7 +153,7 @@ def interactive_menu():
         		1: initialize,
         		2: exit
     		}
-		option = int(input('\t1: Add Key/Value Pair\n\t2: Exit\nChoose: '))
+		option = int(input('\t1: Add\n\t2: Exit\nChoose: '))
 		while option not in range(1, len(switcher)):
 			option = int(input('Choose correct option: ' ))
 
