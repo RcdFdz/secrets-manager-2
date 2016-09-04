@@ -61,11 +61,16 @@ def id_or_list():
 def print_decrypt_content():
 	id = id_or_list()
 	json_content = json.loads(str(decrypt_content()))
+	size = len(json_content[id])
+
 	output = input('Copy Key (k) or Value (v) to clipboard? (N/k/v): ' )
 	if output.lower() == 'k': os.system("echo '{}' | pbcopy".format(json_content[id][0]))
 	if output.lower() == 'v': os.system("echo '{}' | pbcopy".format(json_content[id][1]))
-	output = input('Show key/value pair? (N/y): ' )
-	if output.lower() == 'y': print('Key:',json_content[id][0],'\nValue:',json_content[id][1])
+	output = input('Show values pair? (N/y): ' )
+	if output.lower() == 'y':
+		print(json_content[id])
+		for e in range(0,size):
+			print(json_content[id][e])
 
 def modify_content():
 	id = id_or_list()
@@ -85,7 +90,6 @@ def modify_content():
 		jkv = json.dumps(json_content, sort_keys=True)
 		encrypt_content(jkv)
 		print("Done! Identifier " + id +" has been modified")
-		print(jkv)
 	else:
 		jkv = json.dumps(json_content, sort_keys=True)
 		encrypt_content(jkv)
