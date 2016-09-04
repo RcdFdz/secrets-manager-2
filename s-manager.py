@@ -182,7 +182,7 @@ def main(argv):
 	if args.interactive: interactive_menu()
 	elif args.list: show_keys()
 	elif args.all: get_key_value(args.all, 'all')
-	elif args.note: get_key_value(args.note, 'note')
+	elif args.element: get_key_value(args.element, 'element')
 	elif not os.path.isfile(FILE): interactive_menu()
 	else: parser.print_help()
 
