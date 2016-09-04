@@ -5,6 +5,8 @@ import os.path
 import glob
 import argparse
 import json
+import textwrap
+
 
 BINARY = '/usr/local/bin/gpg'
 GPG_DIR = '~/.gnupg/'
@@ -63,18 +65,15 @@ def print_decrypt_content():
 	json_content = json.loads(str(decrypt_content()))
 	size = len(json_content[id])
 
-	output = input('Copy Key (k) or Value (v) to clipboard? (N/k/v): ' )
-	if output.lower() == 'k': os.system("echo '{}' | pbcopy".format(json_content[id][0]))
-	if output.lower() == 'v': os.system("echo '{}' | pbcopy".format(json_content[id][1]))
-	output = input('Show values pair? (N/y): ' )
-	if output.lower() == 'y':
-		print(json_content[id])
+	output = input('Show values? (Y/n): ' )
+	if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
 		for e in range(0,size):
-			print(json_content[id][e])
+			print('Element ' + str(e+1) +': \n\t' + str(json_content[id][e]))
+	output = input('Copy any elemento to clipboard? (N/element number): ' )
+	if output.lower() != '' or output.lower() != 'n' or output.lower() != 'no': os.system("echo '{}' | pbcopy".format(json_content[id][int(output)-1]))
 
 def modify_content():
 	id = id_or_list()
-
 	json_content = json.loads(str(decrypt_content()))
 	size = len(json_content[id])
 	json_content.pop(id, None)
@@ -101,10 +100,15 @@ def show_keys():
 		print(key)
 
 def add_content(id, old_content = None):
+	print(textwrap.dedent("""\
+	\nPlease introduce the number of elements you want to add. \nEx:
+      1 element: Key
+      2 elements: User and Password
+      3 elements: User, Password and URL
+          """))
 	size = int(input('Number of elements: '))
 	json_content = {}
 	arr = []
-
 	for e in range(1,size+1):
 		element = input('Element ' + str(e) +': ')
 		arr.append(element)
@@ -125,7 +129,6 @@ def add_menu():
 	id = input('Please Introduce an Identifier: ').replace(' ','_')
 	while (id in json_content):
 		id = input('This identifier exist. Please Introduce other Identifier: ').replace(' ','_')
-
 	json_content = add_content(id, json_content)
 
 def initialize():
