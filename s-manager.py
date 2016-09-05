@@ -47,7 +47,9 @@ def get_key_value(args, option):
 	if option.lower() == 'all':
 		for elem in json_content[args]:
 			print(elem)
-	if option.lower() == 'element': print(json_content[args[0]][int(args[1])-1])
+	elif option.lower() == 'element': print(json_content[args[0]][int(args[1])-1])
+	elif option.lower() == 'key': print(json_content[id][0])
+	elif option.lower() == 'value': print(json_content[id][1])
 
 def id_or_list():
 	json_content = json.loads(str(decrypt_content()))
@@ -71,7 +73,7 @@ def print_decrypt_content():
 		for e in range(0,size):
 			print('Element ' + str(e+1) +':  ' + str(json_content[id][e]))
 	output = input('Copy any elemento to clipboard? (N/element number): ' )
-	if output.lower() != '' or output.lower() != 'n' or output.lower() != 'no': os.system("echo '{}' | pbcopy".format(json_content[id][int(output)-1]))
+	if output.lower() != '' and output.lower() != 'n' and output.lower() and 'no': os.system("echo '{}' | pbcopy".format(json_content[id][int(output)-1]))
 
 def modify_content():
 	id = id_or_list()
@@ -85,15 +87,15 @@ def modify_content():
 		element = input('Element ' + str(e) +': ')
 		arr.append(element)
 
-	if all(x != '' for x in arr):
+	if all(x == '' for x in arr):
+		jkv = json.dumps(json_content, sort_keys=True)
+		encrypt_content(jkv)
+		print("Done! Identifier " + id +" has been deleted")
+	else:
 		json_content[id] = arr
 		jkv = json.dumps(json_content, sort_keys=True)
 		encrypt_content(jkv)
 		print("Done! Identifier " + id +" has been modified")
-	else:
-		jkv = json.dumps(json_content, sort_keys=True)
-		encrypt_content(jkv)
-		print("Done! Identifier " + id +" has been deleted")
 
 def show_keys():
 	json_content = json.loads(str(decrypt_content()))
@@ -176,11 +178,15 @@ def main(argv):
 	parser.add_argument("-i","--interactive", help="display the interactive menu for pwd-manager",
 		action="store_true")
 	parser.add_argument("-l","--list", help="list all the stored identifiers", action="store_true")
+	parser.add_argument("-k","--key", metavar='identifier', help="return the key for the given identifier")
+	parser.add_argument("-v","--value", metavar='identifier', help="return the value for the given identifier")
 	parser.add_argument("-e","--element", nargs=2, metavar=('identifier','element_number'), help="return the element number for the given identifier")
 	parser.add_argument("-a","--all", metavar='identifier', help="display the key and value pair for the given identifier")
 	args = parser.parse_args()
 	if args.interactive: interactive_menu()
 	elif args.list: show_keys()
+	elif args.key: get_key_value(args.key, 'key')
+	elif args.value: get_key_value(args.value, 'value')
 	elif args.all: get_key_value(args.all, 'all')
 	elif args.element: get_key_value(args.element, 'element')
 	elif not os.path.isfile(FILE): interactive_menu()
