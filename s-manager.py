@@ -7,7 +7,6 @@ import argparse
 import json
 import textwrap
 
-
 BINARY = '/usr/local/bin/gpg'
 GPG_DIR = '~/.gnupg/'
 FILE = 'secrets'
@@ -37,7 +36,7 @@ def encrypt_content(json_content):
 def decrypt_content():
 	file = open('secrets', 'a+')
 	file.seek(0)
-	return  gpg.decrypt(file.read())
+	return gpg.decrypt(file.read())
 
 def update_keys():
 	encrypt_content(str(decrypt_content()))
@@ -108,6 +107,7 @@ def add_content(id, old_content = None):
       1 element: Key
       2 elements: User and Password
       3 elements: User, Password and URL
+      More elements: User, Passsword, URL, etc
           """))
 	size = int(input('Number of elements: '))
 	json_content = {}
@@ -135,9 +135,18 @@ def add_menu():
 	json_content = add_content(id, json_content)
 
 def initialize():
-	file  = open('secrets', 'w+')
 	id = input('Please Introduce an Identifier: ').replace(' ','_')
-	json_content = add_content(id)
+	add_content(id)
+
+def input_menu(option, switcher):
+	while True:
+		try:
+			option = int(option)
+			if option not in range(1,switcher): raise ValueError
+			break
+		except:
+			option = input('Please, choose correct option: ')
+	return option
 
 def interactive_menu():
 	if os.path.isfile(FILE):
@@ -150,12 +159,11 @@ def interactive_menu():
         		5: update_keys,
         		6: exit
     		}
-		option = int(input('\t1: Add Key/Value Pair\n\t2: Modify/Delete Key/Value Pair\n\t3: Decrypt Key/Value Pair\n\t4: Show Keys\n\t5: Update public keys\n\t6: Exit\nChoose: '))
-		while option not in range(1, len(switcher)):
-			option = int(input('Choose correct option: ' ))
-
+		option = input('\t1: Add Key/Value Pair\n\t2: Modify/Delete Key/Value Pair\n\t3: Decrypt Key/Value Pair\n\t4: Show Keys\n\t5: Update public keys\n\t6: Exit\nChoose: ')
+		option = input_menu(option, len(switcher))
 		func = switcher.get(option, lambda: 'nothing')
 		return func()
+
 	else:
 		print('The file', FILE,'has not been found, using -i/--interactive argument.')
 		switcher = {
@@ -163,10 +171,8 @@ def interactive_menu():
         		1: initialize,
         		2: exit
     		}
-		option = int(input('\t1: Add\n\t2: Exit\nChoose: '))
-		while option not in range(1, len(switcher)):
-			option = int(input('Choose correct option: ' ))
-
+		option = input('\t1: Add\n\t2: Exit\nChoose: ')
+		option = input_menu(option, len(switcher))
 		func = switcher.get(option, lambda: 'nothing')
 		return func()
 
