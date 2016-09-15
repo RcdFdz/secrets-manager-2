@@ -10,8 +10,17 @@ import textwrap
 BINARY = '/usr/local/bin/gpg'
 GPG_DIR = '~/.gnupg/'
 FILE = 'secrets'
+KEY_NAME_ORDER = ['User','Password', 'URL', 'Note']
 
 gpg=gnupg.GPG(binary=BINARY,homedir=GPG_DIR)
+
+def get_sentences(id):
+	size = len(KEY_NAME_ORDER)
+	if id >= size:
+		sentence = 'Element ' + str(id+1)
+	else:
+		sentence = KEY_NAME_ORDER[id]
+	return sentence
 
 def get_keys():
 	files = glob.glob('./pub-keys/*.asc')
@@ -70,7 +79,7 @@ def print_decrypt_content():
 	output = input('Show values? (Y/n): ' )
 	if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
 		for e in range(0,size):
-			print('Element ' + str(e+1) +':  ' + str(json_content[id][e]))
+			print(get_sentences(e) + ': ' + str(json_content[id][e]))
 	output = input('Copy any elemento to clipboard? (N/element number): ' )
 	if output.lower() != '' and output.lower() != 'n' and output.lower() and 'no': os.system("echo '{}' | pbcopy".format(json_content[id][int(output)-1]))
 
@@ -80,10 +89,10 @@ def modify_content():
 	size = len(json_content[id])
 	json_content.pop(id, None)
 
-	print("Leave elements without value for delete")
+	print("Leave all elements without value for delete the entry")
 	arr = []
-	for e in range(1,size+1):
-		element = input('Element ' + str(e) +': ')
+	for e in range(0,size):
+		element = input(get_sentences(e) + ': ')
 		arr.append(element)
 
 	if all(x == '' for x in arr):
@@ -112,8 +121,8 @@ def add_content(id, old_content = None):
 	size = int(input('Number of elements: '))
 	json_content = {}
 	arr = []
-	for e in range(1,size+1):
-		element = input('Element ' + str(e) +': ')
+	for e in range(0,size):
+		element = input(get_sentences(e) + ': ')
 		arr.append(element)
 
 	if old_content:
