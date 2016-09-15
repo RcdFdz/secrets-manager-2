@@ -1,6 +1,13 @@
 ### Password Manager
 The aim to the present project is to solve the shared secrets problem in small teams.
 
+### How to install
+It is necessary to install GPG Suite version 2016.07 (https://gpgtools.org/) or greater. And import a key pair sec/pub keys to GPG Keychain or generate them with the GPG Suite.
+
+Once the previus requirements are satisfied will be necessary to copy a public key into the `pub-keys` folder, otherwise the application cannot work.
+
+If your team is allready working with secrets-manager someone from the team will have to update the `secrets` file with your key.
+
 ### How it works
 The first time that the script is runs asks for key/value input and generates the secrets file by using the public keys saved in pub-keys folder.
 
