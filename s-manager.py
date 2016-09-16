@@ -56,8 +56,8 @@ def get_key_value(args, option):
 		for elem in json_content[args]:
 			print(elem)
 	elif option.lower() == 'element': print(json_content[args[0]][int(args[1])-1])
-	elif option.lower() == 'key': print(json_content[id][0])
-	elif option.lower() == 'value': print(json_content[id][1])
+	elif option.lower() == 'key': print(json_content[args][0])
+	elif option.lower() == 'value': print(json_content[args][1])
 
 def id_or_list():
 	json_content = json.loads(str(decrypt_content()))
