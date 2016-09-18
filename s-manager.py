@@ -116,7 +116,7 @@ def add_content(id, old_content = None):
       1 element: Key
       2 elements: User and Password
       3 elements: User, Password and URL
-      More elements: User, Passsword, URL, etc
+      More elements: User, Passsword, URL, Note, etc
           """))
 	size = int(input('Number of elements: '))
 	json_content = {}
