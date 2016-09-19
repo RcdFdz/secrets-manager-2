@@ -43,7 +43,7 @@ def encrypt_content(json_content):
 	return gpg.encrypt(json_content, *finger_prints, always_trust=True, output=FILE)
 
 def decrypt_content():
-	file = open('secrets', 'a+')
+	file = open(FILE, 'a+')
 	file.seek(0)
 	return gpg.decrypt(file.read())
 
