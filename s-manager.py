@@ -10,8 +10,7 @@ import textwrap
 BINARY = '/usr/local/bin/gpg'
 GPG_DIR = '~/.gnupg/'
 FILE = 'secrets'
-KEY_NAME_ORDER = ['User','Password', 'URL', 'Note']
-
+KEYS = {'1. User' : None, '2. Password' : None, '3. Url' : None, '4. Other' : None}
 gpg=gnupg.GPG(binary=BINARY,homedir=GPG_DIR)
 
 def get_sentences(id):
@@ -66,7 +65,6 @@ def id_or_list():
 		if id.lower()=='list' :
 			show_keys()
 			id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
-
 		if id not in json_content:
 			id = input("Introduce a valid identifier name or 'list' for list all identifiers: ").replace(' ','_')
 	return id
@@ -78,10 +76,23 @@ def print_decrypt_content():
 
 	output = input('Show values? (Y/n): ' )
 	if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
-		for e in range(0,size):
-			print(get_sentences(e) + ': ' + str(json_content[id][e]))
-	output = input('Copy any elemento to clipboard? (N/element number): ' )
-	if output.lower() != '' and output.lower() != 'n' and output.lower() and 'no': os.system("echo '{}' | pbcopy".format(json_content[id][int(output)-1]))
+		for e in sorted(json_content[id].keys()):
+			print(str(e) + ': ' + str(json_content[id][e]))
+
+	output = input('Copy any elemento to clipboard? (N/element name): ' )
+	while check_keys(output) and output.lower() != '' and output.lower() != 'n' and output.lower() and 'no':
+		try:
+				os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
+		except KeyError:
+			output = input('Please choose "user", "password", "url" or "note": ' )
+			if check_keys(output):
+				os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
+
+def check_keys(output):
+	exist = False
+	for e in KEYS.keys():
+		if output == e[3:]: exist = True
+	return exist
 
 def modify_content():
 	id = id_or_list()
@@ -111,25 +122,16 @@ def show_keys():
 		print(key)
 
 def add_content(id, old_content = None):
-	print(textwrap.dedent("""\
-	\nPlease introduce the number of elements you want to add. \nEx:
-      1 element: Key
-      2 elements: User and Password
-      3 elements: User, Password and URL
-      More elements: User, Passsword, URL, Note, etc
-          """))
-	size = int(input('Number of elements: '))
 	json_content = {}
-	arr = []
-	for e in range(0,size):
-		element = input(get_sentences(e) + ': ')
-		arr.append(element)
+
+	for el in sorted(KEYS.keys()):
+		KEYS[el] = input('Please introduce a value for "' + str(el.lower()[3:]) + '" field, or leave it empty: ')
 
 	if old_content:
-			old_content[id] = arr
-			json_content = old_content
+		old_content[id] = KEYS[el]
+		json_content = old_content
 	else:
-		json_content[id] = arr
+		json_content[id] = KEYS
 
 	jkv = json.dumps(json_content, sort_keys=True)
 	encrypt_content(jkv)
