@@ -46,7 +46,7 @@ def get_key_value(args, option):
 	json_content = json.loads(str(decrypt_content()))
 	if option.lower() == 'all':
 		for e in KEYS:
-			print(e.capitalize()+':',json_content[args][e])
+			print(e.capitalize() + ': ' + json_content[args][e])
 	elif option.lower() == 'user': print(json_content[args]['user'])
 	elif option.lower() == 'pass': print(json_content[args]['password'])
 	elif option.lower() == 'url': print(json_content[args]['url'])
@@ -67,17 +67,17 @@ def print_decrypt_content():
 	id = id_or_list()
 	json_content = json.loads(str(decrypt_content()))
 
-	output = input('Show values? (Y/n): ' )
+	output = input('Show values? (Y/n): ')
 	while output.lower() != 'y' and output.lower() != 'n' and output.lower() != 'yes' and output.lower() != 'no' and output.lower() != '':
-		output = input('Show values? (Y/n): ' )
+		output = input('Show values? (Y/n): ')
 
 	if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
 		for e in KEYS:
 			print(str(e) + ': ' + str(json_content[id][e]))
 
 	output = input('Copy any elemento to clipboard? (N/element name): ' )
-	while output not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
-		output = input('Please choose "no" for leave. For copy and element "user", "password", "url" or "other": ' )
+	while output.lower() not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
+		output = input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
 
 	if output.lower() != '' and  output.lower() != 'no' and output.lower() != 'n':
 		os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
@@ -87,21 +87,21 @@ def modify_content():
 	json_content = json.loads(str(decrypt_content()))
 	json_content.pop(id, None)
 	new_json = {}
-	print("Leave all elements without value for delete the entry")
+	print('Leave all elements without value for delete the entry')
 
 	for e in KEYS:
-		element = input("New " + str(e) + ": ")
+		element = input('New ' + str(e) + ': ')
 		new_json[e] = element
 
 	if all( values == '' for key, values in new_json.items()):
 		jkv = json.dumps(json_content, sort_keys=True)
 		encrypt_content(jkv)
-		print("Done! Identifier " + id +" has been deleted")
+		print('Done! Identifier ' + id + ' has been deleted')
 	else:
 		json_content[id] = new_json
 		jkv = json.dumps(json_content, sort_keys=True)
 		encrypt_content(jkv)
-		print("Done! Identifier " + id +" has been modified")
+		print('Done! Identifier ' + id + ' has been modified')
 
 def show_keys():
 	json_content = json.loads(str(decrypt_content()))
@@ -112,7 +112,7 @@ def add_content(id, old_content = None):
 	json_content = {}
 
 	for el in KEYS:
-		KEYS[el] = input('Please introduce a value for "' + str(el.lower()) + '" field, or leave it empty: ')
+		KEYS[el] = input("Please introduce a value for '" + str(el.lower()) + "' field, or leave it empty: ")
 
 	if old_content:
 		old_content[id] = KEYS
@@ -163,7 +163,7 @@ def interactive_menu():
 		return func()
 
 	else:
-		print('The file', FILE,'has not been found, using -i/--interactive argument.')
+		print('The file' + FILE + 'has not been found, using -i/--interactive argument.')
 		switcher = {
 			0: lambda: '',
         		1: initialize,
@@ -179,14 +179,14 @@ def exit():
 
 def main(argv):
 	parser = argparse.ArgumentParser(description='Manager for sensible information under PGP')
-	parser.add_argument("-i","--interactive", help="display the interactive menu for pwd-manager",
-		action="store_true")
-	parser.add_argument("-l","--list", help="list all the stored identifiers", action="store_true")
-	parser.add_argument("-u","--user", metavar='identifier', help="return the username for the given identifier")
-	parser.add_argument("-p","--password", metavar='identifier', help="return the password for the given identifier")
-	parser.add_argument("-ur","--url", metavar='identifier', help="return the URL for the given identifier")
-	parser.add_argument("-o","--other", metavar='identifier', help="return the other for the given identifier")
-	parser.add_argument("-a","--all", metavar='identifier', help="display all values for the given identifier")
+	parser.add_argument('-i','--interactive', help='display the interactive menu for pwd-manager',
+		action='store_true')
+	parser.add_argument('-l','--list', help='list all the stored identifiers', action='store_true')
+	parser.add_argument('-u','--user', metavar='identifier', help='return the username for the given identifier')
+	parser.add_argument('-p','--password', metavar='identifier', help='return the password for the given identifier')
+	parser.add_argument('-ur','--url', metavar='identifier', help='return the URL for the given identifier')
+	parser.add_argument('-o','--other', metavar='identifier', help='return the other for the given identifier')
+	parser.add_argument('-a','--all', metavar='identifier', help='display all values for the given identifier')
 	args = parser.parse_args()
 	if args.interactive: interactive_menu()
 	elif args.list: show_keys()
@@ -198,5 +198,5 @@ def main(argv):
 	elif not os.path.isfile(FILE): interactive_menu()
 	else: parser.print_help()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	main(sys.argv[1:])
