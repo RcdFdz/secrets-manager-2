@@ -14,14 +14,6 @@ FILE = 'secrets'
 KEYS = OrderedDict([('user', None), ('password', None), ('url', None), ('other', None)])
 gpg=gnupg.GPG(binary=BINARY,homedir=GPG_DIR)
 
-def get_sentences(id):
-	size = len(KEY_NAME_ORDER)
-	if id >= size:
-		sentence = 'Element ' + str(id+1)
-	else:
-		sentence = KEY_NAME_ORDER[id]
-	return sentence
-
 def get_keys():
 	files = glob.glob('./pub-keys/*.asc')
 	keys_data = ''
@@ -92,21 +84,20 @@ def print_decrypt_content():
 def modify_content():
 	id = id_or_list()
 	json_content = json.loads(str(decrypt_content()))
-	size = len(json_content[id])
 	json_content.pop(id, None)
-
+	new_json = {}
 	print("Leave all elements without value for delete the entry")
-	arr = []
-	for e in range(0,size):
-		element = input(get_sentences(e) + ': ')
-		arr.append(element)
 
-	if all(x == '' for x in arr):
+	for e in KEYS:
+		element = input("New " + str(e) + ": ")
+		new_json[e] = element
+
+	if all( values == '' for key, values in new_json.items()):
 		jkv = json.dumps(json_content, sort_keys=True)
 		encrypt_content(jkv)
 		print("Done! Identifier " + id +" has been deleted")
 	else:
-		json_content[id] = arr
+		json_content[id] = new_json
 		jkv = json.dumps(json_content, sort_keys=True)
 		encrypt_content(jkv)
 		print("Done! Identifier " + id +" has been modified")
