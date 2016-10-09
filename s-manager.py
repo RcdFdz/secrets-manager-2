@@ -46,7 +46,7 @@ def get_key_value(args, option):
 	json_content = json.loads(str(decrypt_content()))
 	if option.lower() == 'all':
 		for e in KEYS:
-			print(e+':',json_content[args][e])
+			print(e.capitalize()+':',json_content[args][e])
 	elif option.lower() == 'user': print(json_content[args]['user'])
 	elif option.lower() == 'pass': print(json_content[args]['password'])
 	elif option.lower() == 'url': print(json_content[args]['url'])
