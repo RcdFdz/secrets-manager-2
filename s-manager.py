@@ -73,21 +73,21 @@ def id_or_list():
 def print_decrypt_content():
 	id = id_or_list()
 	json_content = json.loads(str(decrypt_content()))
-	size = len(json_content[id])
 
 	output = input('Show values? (Y/n): ' )
+	while output.lower() != 'y' and output.lower() != 'n' and output.lower() != 'yes' and output.lower() != 'no' and output.lower() != '':
+		output = input('Show values? (Y/n): ' )
+
 	if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
 		for e in sorted(json_content[id].keys()):
 			print(str(e) + ': ' + str(json_content[id][e]))
 
 	output = input('Copy any elemento to clipboard? (N/element name): ' )
-	while output in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() and 'no':
-		try:
-			os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
-		except KeyError:
-			output = input('Please choose "user", "password", "url" or "note": ' )
-			if check_keys(output):
-				os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
+	while output not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
+		output = input('Please choose "no" for leave or  "user", "password", "url" or "other" for copy the element: ' )
+
+	if output.lower() != '' and  output.lower() != 'no' and output.lower() != 'n':
+		os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
 
 def modify_content():
 	id = id_or_list()
