@@ -79,12 +79,12 @@ def print_decrypt_content():
 		output = input('Show values? (Y/n): ' )
 
 	if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
-		for e in sorted(json_content[id].keys()):
+		for e in KEYS:
 			print(str(e) + ': ' + str(json_content[id][e]))
 
 	output = input('Copy any elemento to clipboard? (N/element name): ' )
 	while output not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
-		output = input('Please choose "no" for leave or  "user", "password", "url" or "other" for copy the element: ' )
+		output = input('Please choose "no" for leave. For copy and element "user", "password", "url" or "other": ' )
 
 	if output.lower() != '' and  output.lower() != 'no' and output.lower() != 'n':
 		os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
