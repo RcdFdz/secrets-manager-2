@@ -72,6 +72,9 @@ def id_or_list():
 def print_decrypt_content():
 	id = id_or_list()
 	json_content = json.loads(str(decrypt_content()))
+
+	print(json_content)
+
 	size = len(json_content[id])
 
 	output = input('Show values? (Y/n): ' )
@@ -128,7 +131,7 @@ def add_content(id, old_content = None):
 		KEYS[el] = input('Please introduce a value for "' + str(el.lower()[3:]) + '" field, or leave it empty: ')
 
 	if old_content:
-		old_content[id] = KEYS[el]
+		old_content[id] = KEYS
 		json_content = old_content
 	else:
 		json_content[id] = KEYS
