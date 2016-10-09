@@ -1,3 +1,5 @@
+# OBSOLET (TO REWRITE)
+
 ### Password Manager
 The aim to the present project is to solve the shared secrets problem in small teams.
 
