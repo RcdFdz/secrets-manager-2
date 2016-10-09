@@ -6,11 +6,12 @@ import glob
 import argparse
 import json
 import textwrap
+from collections import OrderedDict
 
 BINARY = '/usr/local/bin/gpg'
 GPG_DIR = '~/.gnupg/'
 FILE = 'secrets'
-KEYS = {'1. User' : None, '2. Password' : None, '3. Url' : None, '4. Other' : None}
+KEYS = OrderedDict([('user', None), ('password', None), ('url', None), ('other', None)])
 gpg=gnupg.GPG(binary=BINARY,homedir=GPG_DIR)
 
 def get_sentences(id):
@@ -72,9 +73,6 @@ def id_or_list():
 def print_decrypt_content():
 	id = id_or_list()
 	json_content = json.loads(str(decrypt_content()))
-
-	print(json_content)
-
 	size = len(json_content[id])
 
 	output = input('Show values? (Y/n): ' )
@@ -83,19 +81,13 @@ def print_decrypt_content():
 			print(str(e) + ': ' + str(json_content[id][e]))
 
 	output = input('Copy any elemento to clipboard? (N/element name): ' )
-	while check_keys(output) and output.lower() != '' and output.lower() != 'n' and output.lower() and 'no':
+	while output in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() and 'no':
 		try:
-				os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
+			os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
 		except KeyError:
 			output = input('Please choose "user", "password", "url" or "note": ' )
 			if check_keys(output):
 				os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
-
-def check_keys(output):
-	exist = False
-	for e in KEYS.keys():
-		if output == e[3:]: exist = True
-	return exist
 
 def modify_content():
 	id = id_or_list()
@@ -127,8 +119,8 @@ def show_keys():
 def add_content(id, old_content = None):
 	json_content = {}
 
-	for el in sorted(KEYS.keys()):
-		KEYS[el] = input('Please introduce a value for "' + str(el.lower()[3:]) + '" field, or leave it empty: ')
+	for el in KEYS:
+		KEYS[el] = input('Please introduce a value for "' + str(el.lower()) + '" field, or leave it empty: ')
 
 	if old_content:
 		old_content[id] = KEYS
