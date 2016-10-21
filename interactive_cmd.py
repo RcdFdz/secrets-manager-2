@@ -1,67 +1,47 @@
 import json
 import os
+import sys
 from collections import OrderedDict
+from gpg_tools import GPGTools
 
 KEYS = OrderedDict([('user', None), ('password', None), ('url', None), ('other', None)])
 
 class InteractiveCMD:
-	def id_or_list():
-		json_content = json.loads(str(decrypt_content()))
-		id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
-		while id.lower()=='list' or id not in json_content:
-			if id.lower()=='list' :
-				show_keys()
-				id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
-			if id not in json_content:
-				id = input("Introduce a valid identifier name or 'list' for list all identifiers: ").replace(' ','_')
-		return id
+	gpg = ''
 
-	def print_decrypt_content():
-		id = id_or_list()
-		json_content = json.loads(str(decrypt_content()))
+	def __init__(self, gpg):
+		self.gpg = gpg
 
-		output = input('Show values? (Y/n): ')
-		while output.lower() != 'y' and output.lower() != 'n' and output.lower() != 'yes' and output.lower() != 'no' and output.lower() != '':
-			output = input('Show values? (Y/n): ')
+	def add_menu(self):
+		return(0)
 
-		if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
-			for e in KEYS:
-				print(str(e) + ': ' + str(json_content[id][e]))
+	def modify_content(self):
+		return(0)
 
-		output = input('Copy any elemento to clipboard? (N/element name): ' )
-		while output.lower() not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
-			output = input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
+	def print_decrypt_content(self):
+		return(0)
 
-		if output.lower() != '' and  output.lower() != 'no' and output.lower() != 'n':
-			os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
-	def input_menu(option, switcher):
-	while True:
+	def show_keys(self):
 		try:
-			option = int(option)
-			if option not in range(1,switcher): raise ValueError
-			break
+			json_content = json.loads(str(self.gpg.decrypt_content()))
+			for key in sorted(json_content.keys()):
+		 		print(key)
 		except:
-			option = input('Please, choose correct option: ')
-	return option
+			raise ValueError
 
-	def add_menu():
-		file  = open('secrets', 'a+')
-		json_content = json.loads(str(decrypt_content()))
+	def update_keys(self):
+		self.gpg.encrypt_content(str(self.gpg.decrypt_content()))
 
-		id = input('Please Introduce an Identifier: ').replace(' ','_')
-		while (id in json_content):
-			id = input('This identifier exist. Please Introduce other Identifier: ').replace(' ','_')
-		json_content = add_content(id, json_content)
+	def exit(self):
+		sys.exit(0)
 
-	def initialize():
-		id = input('Please Introduce an Identifier: ').replace(' ','_')
-		add_content(id)
+	def input_menu(self, dummy):
+		return(0)
 
-	def modify_content():
-		self.id_or_list()
-		print('Leave all elements without value for delete the entry')
+	def initialize(self):
+		return(0)
 
-	def interactive_menu():
+	def interactive_menu(self):
 		if os.path.isfile(FILE):
 			switcher = {
 				0: lambda: '',
@@ -73,17 +53,22 @@ class InteractiveCMD:
 				6: self.exit
 			}
 			option = input('\t1: Add Key/Value Pair\n\t2: Modify/Delete Key/Value Pair\n\t3: Decrypt Key/Value Pair\n\t4: Show Keys\n\t5: Update public keys\n\t6: Exit\nChoose: ')
-			option = input_menu(option, len(switcher))
 			func = switcher.get(option, lambda: 'nothing')
 			return func()
 		else:
 			print('The file' + FILE + 'has not been found, using -i/--interactive argument.')
 			switcher = {
 				0: lambda: '',
-				1: initialize,
-				2: exit
+				1: self.initialize,
+				2: self.exit
 			}
 			option = input('\t1: Add\n\t2: Exit\nChoose: ')
-			option = input_menu(option, len(switcher))
 			func = switcher.get(option, lambda: 'nothing')
 			return func()
+
+	def main(self):
+		pass
+
+if __name__ == '__main__':
+	icmd = InteractiveCMD()
+	icmd.main()

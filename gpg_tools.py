@@ -4,11 +4,19 @@ import glob
 BINARY = '/usr/local/bin/gpg'
 GPG_DIR = '~/.gnupg/'
 PUB_KEYS = './pub-keys/*.asc'
-FILE = 'secrets'
 
 gpg=gnupg.GPG(binary=BINARY,homedir=GPG_DIR)
 
 class GPGTools:
+	FILE = 'secrets'
+	KEY = None
+
+	def __init__(self, file = None, key = None):
+		if file:
+			self.FILE = file
+		if key:
+			self.KEY = key
+
 	def get_keys(self):
 		files = glob.glob(PUB_KEYS)
 		keys_data = ''
@@ -26,11 +34,17 @@ class GPGTools:
 		return fprints
 
 	def encrypt_content(self, content):
-		finger_prints = get_keys()
-		return gpg.encrypt(content, *finger_prints, always_trust=True, output=FILE)
+		finger_prints = self.get_keys()
+		return gpg.encrypt(content, *finger_prints, always_trust=True, output=self.FILE)
 
 	def decrypt_content(self):
-		file = open(FILE, 'a+')
+		file = open(self.FILE, 'a+')
 		file.seek(0)
-		return gpg.decrypt(file.read())
+		if self.KEY:
+			return gpg.decrypt(file.read(), passphrase=self.KEY)
+		else:
+			return gpg.decrypt(file.read())
 
+if __name__ == '__main__':
+	gpg = GPGTools()
+	gpg.main()
