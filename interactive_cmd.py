@@ -12,6 +12,11 @@ class InteractiveCMD:
 	def __init__(self, gpg):
 		self.gpg = gpg
 
+	def add_content(self):
+		for el in KEYS:
+			KEYS[el] = input("Please introduce a value for '" + str(el.lower()) + "' field, or leave it empty: ")
+		return KEYS
+
 	def add_menu(self):
 		return(0)
 

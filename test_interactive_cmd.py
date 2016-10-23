@@ -1,5 +1,5 @@
 import pytest
-import mock
+import builtins
 import os
 from interactive_cmd import InteractiveCMD
 from gpg_tools import GPGTools
@@ -92,10 +92,39 @@ def test_show_keys_no_json(capsys):
 
 	remove_files(['secrets_tmp3'])
 
+def test_add_content(monkeypatch):
+	message = "{'One': {'user':'user1','pass':'pass1','url':'url1','other':'other1'}}"
 
+	gpg = GPGTools(file = 'secrets_tmp4', key = '12345')
+	gpg.encrypt_content(message)
 
+	icmd = InteractiveCMD(gpg)
 
+	def mock_input_user(*args, **kwargs):
+		return 'user1'
 
+	def mock_input_pass(*args, **kwargs):
+		return 'pass1'
 
+	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(builtins, 'input',mock_input_pass)
 
+	x = icmd.add_content()
+	assert x == 'user1'
+
+# def test_raw_input(monkeypatch):
+#     """ Get user input without actually having a user type letters using
+#     monkeypatch. """
+#     def mock_raw_input(*args, **kwargs):
+#         """ Act like someone just typed 'yolo'. """
+#         return 'yolo';
+
+#     # Put the mock_raw_input in place of the actual raw_input on the
+#     # __builtin__ module.
+#     monkeypatch.setattr(__builtin__, 'raw_input', mock_raw_input)
+
+#     # retval should now contain 'yolo'
+#     retval = raw_input()
+
+#     assert retval == 'yolo'
 
