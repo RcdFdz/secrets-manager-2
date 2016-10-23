@@ -1,6 +1,9 @@
 import pytest
+import mock
 import builtins
 import os
+from collections import OrderedDict
+from secrets_manager import SecretsManager
 from interactive_cmd import InteractiveCMD
 from gpg_tools import GPGTools
 
@@ -42,7 +45,6 @@ def test_no_update_keys():
 
 	file1 = open('secrets_tmp1','r')
 	file2 = open('secrets_tmp2','r')
-
 	assert file1.read() == file2.read()
 
 	remove_files(['secrets_tmp1','secrets_tmp2'])
@@ -55,76 +57,30 @@ def test_exit():
 
 def test_show_keys(capsys):
 	message = '{"One": 1, "Two": 2}'
+	json = {"One": 1, "Two": 2}
 
-	gpg = GPGTools(file = 'secrets_tmp3', key = '12345')
+	gpg = GPGTools(file = 'secrets', key = '12345')
 	gpg.encrypt_content(message)
+	sm = SecretsManager(json)
 
-	icmd = InteractiveCMD(gpg)
+	icmd = InteractiveCMD(gpg, sm)
 	icmd.show_keys()
-	out, err = capsys.readouterr()
 
+	out, err = capsys.readouterr()
 	assert out == 'One\nTwo\n'
 
-def test_show_keys_empty(capsys):
-	message = '{}'
-
-	gpg = GPGTools(file = 'secrets_tmp3', key = '12345')
-	gpg.encrypt_content(message)
-
-	icmd = InteractiveCMD(gpg)
-	icmd.show_keys()
-	out, err = capsys.readouterr()
-
-	assert out == ''
-	remove_files(['secrets_tmp3'])
-
-def test_show_keys_no_json(capsys):
-	message = 'd'
-
-	gpg = GPGTools(file = 'secrets_tmp3', key = '12345')
-	gpg.encrypt_content(message)
-
-	with pytest.raises(ValueError):
-		icmd = InteractiveCMD(gpg)
-		icmd.show_keys()
-		out, err = capsys.readouterr()
-		assert out == ''
-
-	remove_files(['secrets_tmp3'])
-
 def test_add_content(monkeypatch):
-	message = "{'One': {'user':'user1','pass':'pass1','url':'url1','other':'other1'}}"
+	message = '{"One": {"user":"user1","pass":"pass1","url":"url1","other":"other1"}}'
 
-	gpg = GPGTools(file = 'secrets_tmp4', key = '12345')
+	gpg = GPGTools(file = 'secrets', key = '12345')
 	gpg.encrypt_content(message)
 
 	icmd = InteractiveCMD(gpg)
 
-	def mock_input_user(*args, **kwargs):
-		return 'user1'
+	values = ['user1', 'pass1', 'url1', 'other1']
+	with mock.patch('builtins.input', side_effect = values):
+		x = icmd.add_content()
+		assert x == OrderedDict([('user', 'user1'), ('password', 'pass1'), ('url', 'url1'), ('other', 'other1')])
 
-	def mock_input_pass(*args, **kwargs):
-		return 'pass1'
-
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
-	monkeypatch.setattr(builtins, 'input',mock_input_pass)
-
-	x = icmd.add_content()
-	assert x == 'user1'
-
-# def test_raw_input(monkeypatch):
-#     """ Get user input without actually having a user type letters using
-#     monkeypatch. """
-#     def mock_raw_input(*args, **kwargs):
-#         """ Act like someone just typed 'yolo'. """
-#         return 'yolo';
-
-#     # Put the mock_raw_input in place of the actual raw_input on the
-#     # __builtin__ module.
-#     monkeypatch.setattr(__builtin__, 'raw_input', mock_raw_input)
-
-#     # retval should now contain 'yolo'
-#     retval = raw_input()
-
-#     assert retval == 'yolo'
-
+def test_add_id(monkeypatch):
+	raise TypeError

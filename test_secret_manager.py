@@ -61,3 +61,20 @@ def test_add_value_exist():
 	with pytest.raises(KeyError):
 		x = sm.add('Two',{'user':'user3','pass':'pass3','url':'url3','other':'other3'})
 
+def test_get_keys():
+	json = {'One': 1, 'Two': 2}
+	sm = SecretsManager(json)
+	x = sm.get_keys()
+	assert x == ['One','Two']
+
+def test_get_keys_empty():
+	json = {}
+	sm = SecretsManager(json)
+	x = sm.get_keys()
+	assert x == []
+
+def test_get_keys_no_json():
+	json = 'Error'
+	sm = SecretsManager(json)
+	with pytest.raises(ValueError):
+		x = sm.get_keys()

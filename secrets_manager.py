@@ -1,4 +1,5 @@
 from gpg_tools import GPGTools
+import json
 
 class SecretsManager:
 	json_content = {}
@@ -8,7 +9,7 @@ class SecretsManager:
 			self.json_content = new_json
 		else:
 			gpg = GPGTools()
-			self.json_content = gpg.decrypt_content()
+			self.json_content = json.loads(str(gpg.decrypt_content()).replace("'",'"'))
 
 	def delete_entry(self, id):
 		self.json_content.pop(id)
@@ -34,6 +35,13 @@ class SecretsManager:
 		else:
 			raise KeyError
 		return self.json_content
+
+	def get_keys(self):
+		try:
+			keys = sorted(self.json_content.keys())
+			return keys
+		except:
+			raise ValueError
 
 	def main(self):
 		pass

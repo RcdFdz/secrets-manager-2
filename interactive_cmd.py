@@ -3,19 +3,32 @@ import os
 import sys
 from collections import OrderedDict
 from gpg_tools import GPGTools
+from secrets_manager import SecretsManager
 
 KEYS = OrderedDict([('user', None), ('password', None), ('url', None), ('other', None)])
 
 class InteractiveCMD:
 	gpg = ''
+	sm = ''
 
-	def __init__(self, gpg):
+	def __init__(self, gpg, sm = None):
 		self.gpg = gpg
+		if sm:
+			self.sm = sm
+		else:
+			self.sm = SecretsManager()
 
 	def add_content(self):
 		for el in KEYS:
 			KEYS[el] = input("Please introduce a value for '" + str(el.lower()) + "' field, or leave it empty: ")
 		return KEYS
+
+	def add_id(self):
+		id = input('Please Introduce an Identifier: ').replace(' ','_')
+		keys = self.sm.get_keys()
+		while (id in keys):
+			id = input('This identifier exist. Please Introduce other Identifier: ').replace(' ','_')
+		return id
 
 	def add_menu(self):
 		return(0)
@@ -27,12 +40,8 @@ class InteractiveCMD:
 		return(0)
 
 	def show_keys(self):
-		try:
-			json_content = json.loads(str(self.gpg.decrypt_content()))
-			for key in sorted(json_content.keys()):
-		 		print(key)
-		except:
-			raise ValueError
+		for key in self.sm.get_keys():
+			print(key)
 
 	def update_keys(self):
 		self.gpg.encrypt_content(str(self.gpg.decrypt_content()))
@@ -72,8 +81,8 @@ class InteractiveCMD:
 			return func()
 
 	def main(self):
-		pass
+		self.add_id()
 
 if __name__ == '__main__':
-	icmd = InteractiveCMD()
+	icmd = InteractiveCMD(GPGTools(file = 'secrets'))
 	icmd.main()

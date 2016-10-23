@@ -45,6 +45,9 @@ class GPGTools:
 		else:
 			return gpg.decrypt(file.read())
 
+	def main(self):
+		pass
+
 if __name__ == '__main__':
-	gpg = GPGTools()
-	gpg.main()
+	gpgTools = GPGTools(file = 'secrets', key = '12345')
+	gpgTools.main()
