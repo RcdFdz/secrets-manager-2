@@ -3,19 +3,24 @@ import os
 import sys
 from collections import OrderedDict
 from gpg_tools import GPGTools
+from json_manager import JSONManager
+from command_controler import CommandControler
 
 KEYS = OrderedDict([('user', None), ('password', None), ('url', None), ('other', None)])
 
 class InteractiveCMD:
 	gpg = ''
+	cmdc = ""
 
 	def __init__(self, gpg):
 		self.gpg = gpg
+		self.cmdc = CommandControler(gpg)
 
 	def add_content(self):
+		id = input('Please Introduce an Identifier: ').replace(' ','_')
 		for el in KEYS:
 			KEYS[el] = input("Please introduce a value for '" + str(el.lower()) + "' field, or leave it empty: ")
-		return KEYS
+		self.jm.add(id, KEYS)
 
 	def add_menu(self):
 		return(0)
@@ -23,19 +28,11 @@ class InteractiveCMD:
 	def modify_content(self):
 		return(0)
 
+	def show_keys(self):
+		cmdc.show_keys(gpg)
+
 	def print_decrypt_content(self):
 		return(0)
-
-	def show_keys(self):
-		try:
-			json_content = json.loads(str(self.gpg.decrypt_content()))
-			for key in sorted(json_content.keys()):
-		 		print(key)
-		except:
-			raise ValueError
-
-	def update_keys(self):
-		self.gpg.encrypt_content(str(self.gpg.decrypt_content()))
 
 	def exit(self):
 		sys.exit(0)

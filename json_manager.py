@@ -1,6 +1,7 @@
+import json
 from gpg_tools import GPGTools
 
-class SecretsManager:
+class JSONManager:
 	json_content = {}
 
 	def __init__(self, new_json = None):
@@ -8,7 +9,7 @@ class SecretsManager:
 			self.json_content = new_json
 		else:
 			gpg = GPGTools()
-			self.json_content = gpg.decrypt_content()
+			self.json_content = json.loads(str(gpg.decrypt_content()))
 
 	def delete_entry(self, id):
 		self.json_content.pop(id)
@@ -39,5 +40,5 @@ class SecretsManager:
 		pass
 
 if __name__ == '__main__':
-	sm = SecretsManager();
+	sm = JSONManager();
 	sm.main()
