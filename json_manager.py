@@ -36,6 +36,13 @@ class JSONManager:
 			raise KeyError
 		return self.json_content
 
+	def get_keys(self):
+		try:
+			keys = sorted(self.json_content.keys())
+			return keys
+		except:
+			raise ValueError
+
 	def main(self):
 		pass
 
