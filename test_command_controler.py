@@ -30,6 +30,9 @@ def test_show_keys(capsys):
 
 	assert out == 'One\nTwo\n'
 
+	remove_files(['secrets_tmp3'])
+
+
 def test_show_keys_empty(capsys):
 	message = '{}'
 

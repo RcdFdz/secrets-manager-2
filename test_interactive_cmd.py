@@ -45,4 +45,18 @@ def test_add_content(monkeypatch):
 
 	remove_files(['secrets_tmp4','secrets_tmp5'])
 
+def test_show_keys(capsys):
+	message = '{"One": 1, "Two": 2}'
+
+	gpg = GPGTools(file = 'secrets_tmp3', key = '12345')
+	gpg.encrypt_content(message)
+
+	icmd = InteractiveCMD(gpg)
+	icmd.show_keys()
+	out, err = capsys.readouterr()
+
+	assert out == 'One\nTwo\n'
+
+	remove_files(['secrets_tmp3'])
+
 

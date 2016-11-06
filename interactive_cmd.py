@@ -19,13 +19,13 @@ class InteractiveCMD:
 		self.jm = JSONManager(gpg = gpg)
 
 	def id_or_list():
-		json_content = json.loads(str(decrypt_content()))
+		keys_list = self.jm.get_keys()
 		id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
-		while id.lower()=='list' or id not in json_content:
+		while id.lower()=='list' or id not in keys_list:
 			if id.lower()=='list' :
 				self.show_keys()
 				id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
-			if id not in json_content:
+			if id not in keys_list:
 				id = input("Introduce a valid identifier name or 'list' for list all identifiers: ").replace(' ','_')
 		return id
 
@@ -47,23 +47,23 @@ class InteractiveCMD:
 		return(0)
 
 	def show_keys(self):
-		cmdc.show_keys(gpg)
+		self.cmdc.show_keys()
 
 	def print_decrypt_content():
 		id = id_or_list()
-		json_content = json.loads(str(decrypt_content()))
+		json_content = json.loads(str(self.gpg.decrypt_content()))
 
-		output = raw_input('Show values? (Y/n): ')
+		output = input('Show values? (Y/n): ')
 		while output.lower() != 'y' and output.lower() != 'n' and output.lower() != 'yes' and output.lower() != 'no' and output.lower() != '':
-			output = raw_input('Show values? (Y/n): ')
+			output = input('Show values? (Y/n): ')
 
 		if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
 			for e in KEYS:
 				print(str(e) + ': ' + str(json_content[id][e]))
 
-		output = raw_input('Copy any elemento to clipboard? (N/element name): ' )
+		output = input('Copy any elemento to clipboard? (N/element name): ' )
 		while output.lower() not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
-			output = raw_input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
+			output = input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
 
 		if output.lower() != '' and  output.lower() != 'no' and output.lower() != 'n':
 			os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
