@@ -1,6 +1,7 @@
 import pytest
 import builtins
 import os
+import json
 from interactive_cmd import InteractiveCMD
 from gpg_tools import GPGTools
 
@@ -20,14 +21,14 @@ def test_exit():
 
 	remove_files(['secrets_tmp'])
 
-
 def test_add_content(monkeypatch):
-	message = '{"One": {"user":"example","pass":"example","url":"example","other":"example"}}'
-
+	message = '{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"},"example": {"user":"example","password":"example","url":"example","other":"example"}}'
 	gpg = GPGTools(file = 'secrets_tmp4', key = '12345')
 	gpg.encrypt_content(message)
 
+	message2 = '{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}'
 	gpg2 = GPGTools(file = 'secrets_tmp5', key = '12345')
+	gpg2.encrypt_content(message2)
 	icmd = InteractiveCMD(gpg2)
 
 	def mock_input_user(*args, **kwargs):
@@ -35,28 +36,13 @@ def test_add_content(monkeypatch):
 
 	monkeypatch.setattr(builtins, 'input',mock_input_user)
 
-	x = icmd.add_content()
+	icmd.add_content()
 
-	file1 = open('secrets_tmp4','r')
-	file2 = open('secrets_tmp5','r')
+	json_gpg = json.loads(str(gpg.decrypt_content()))
+	json_gpg2 = json.loads(str(gpg2.decrypt_content()))
 
-	assert file1.read() == file2.read()
+	assert json_gpg == json_gpg2
 
 	remove_files(['secrets_tmp4','secrets_tmp5'])
 
-# def test_raw_input(monkeypatch):
-#     ''' Get user input without actually having a user type letters using
-#     monkeypatch. '''
-#     def mock_raw_input(*args, **kwargs):
-#         ''' Act like someone just typed 'yolo'. '''
-#         return 'yolo';
-
-#     # Put the mock_raw_input in place of the actual raw_input on the
-#     # __builtin__ module.
-#     monkeypatch.setattr(__builtin__, 'raw_input', mock_raw_input)
-
-#     # retval should now contain 'yolo'
-#     retval = raw_input()
-
-#     assert retval == 'yolo'
 

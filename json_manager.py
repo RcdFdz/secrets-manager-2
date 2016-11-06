@@ -4,9 +4,11 @@ from gpg_tools import GPGTools
 class JSONManager:
 	json_content = {}
 
-	def __init__(self, new_json = None):
+	def __init__(self, new_json = None, gpg = None):
 		if new_json or new_json == {}:
 			self.json_content = new_json
+		elif gpg:
+			self.json_content = json.loads(str(gpg.decrypt_content()))
 		else:
 			gpg = GPGTools()
 			self.json_content = json.loads(str(gpg.decrypt_content()))
@@ -32,9 +34,9 @@ class JSONManager:
 	def add(self, id, list_values):
 		if id not in self.json_content:
 			self.json_content[id] = list_values
+			return self.json_content
 		else:
 			raise KeyError
-		return self.json_content
 
 	def get_keys(self):
 		try:

@@ -1,6 +1,7 @@
 import pytest
 import builtins
 import os
+import json
 from command_controler import CommandControler
 from gpg_tools import GPGTools
 
@@ -85,3 +86,24 @@ def test_no_update_keys():
 	assert file1.read() == file2.read()
 
 	remove_files(['secrets_tmp1','secrets_tmp2'])
+
+def test_add_content(monkeypatch):
+	message = '{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"},"example": {"user":"example","password":"example","url":"example","other":"example"}}'
+	gpg = GPGTools(file = 'secrets_tmp4', key = '12345')
+	gpg.encrypt_content(message)
+
+	message2 = '{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}'
+	gpg2 = GPGTools(file = 'secrets_tmp5', key = '12345')
+	gpg2.encrypt_content(message2)
+
+	json_msg = '{"example": {"user":"example","password":"example","url":"example","other":"example"}}'
+	cmdc = CommandControler(gpg2)
+
+	cmdc.add_content(json_msg)
+
+	json_gpg = json.loads(str(gpg.decrypt_content()))
+	json_gpg2 = json.loads(str(gpg2.decrypt_content()))
+
+	assert json_gpg == json_gpg2
+
+	remove_files(['secrets_tmp4','secrets_tmp5'])

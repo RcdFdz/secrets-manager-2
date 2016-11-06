@@ -2,25 +2,43 @@ import json
 import os
 import sys
 from collections import OrderedDict
-from gpg_tools import GPGTools
 from json_manager import JSONManager
 from command_controler import CommandControler
 
 KEYS = OrderedDict([('user', None), ('password', None), ('url', None), ('other', None)])
+FILE = 'secrets'
 
 class InteractiveCMD:
 	gpg = ''
-	cmdc = ""
+	cmdc = ''
+	jm = ''
 
 	def __init__(self, gpg):
 		self.gpg = gpg
 		self.cmdc = CommandControler(gpg)
+		self.jm = JSONManager(gpg = gpg)
+
+	def id_or_list():
+		json_content = json.loads(str(decrypt_content()))
+		id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
+		while id.lower()=='list' or id not in json_content:
+			if id.lower()=='list' :
+				self.show_keys()
+				id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
+			if id not in json_content:
+				id = input("Introduce a valid identifier name or 'list' for list all identifiers: ").replace(' ','_')
+		return id
 
 	def add_content(self):
 		id = input('Please Introduce an Identifier: ').replace(' ','_')
+
+		while(id in self.jm.get_keys()):
+			id = input('Please Introduce an Identifier: ').replace(' ','_')
+
 		for el in KEYS:
 			KEYS[el] = input("Please introduce a value for '" + str(el.lower()) + "' field, or leave it empty: ")
-		self.jm.add(id, KEYS)
+		new_json_content = self.jm.add(id, dict(KEYS))
+		self.cmdc.add_content(new_json_content)
 
 	def add_menu(self):
 		return(0)
@@ -31,8 +49,24 @@ class InteractiveCMD:
 	def show_keys(self):
 		cmdc.show_keys(gpg)
 
-	def print_decrypt_content(self):
-		return(0)
+	def print_decrypt_content():
+		id = id_or_list()
+		json_content = json.loads(str(decrypt_content()))
+
+		output = raw_input('Show values? (Y/n): ')
+		while output.lower() != 'y' and output.lower() != 'n' and output.lower() != 'yes' and output.lower() != 'no' and output.lower() != '':
+			output = raw_input('Show values? (Y/n): ')
+
+		if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
+			for e in KEYS:
+				print(str(e) + ': ' + str(json_content[id][e]))
+
+		output = raw_input('Copy any elemento to clipboard? (N/element name): ' )
+		while output.lower() not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
+			output = raw_input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
+
+		if output.lower() != '' and  output.lower() != 'no' and output.lower() != 'n':
+			os.system("echo '{}' | pbcopy".format(json_content[id][output.lower()]))
 
 	def exit(self):
 		sys.exit(0)
