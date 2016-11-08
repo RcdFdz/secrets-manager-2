@@ -11,15 +11,13 @@ FILE = 'secrets'
 class InteractiveCMD:
 	gpg = ''
 	cmdc = ''
-	jm = ''
 
 	def __init__(self, gpg):
 		self.gpg = gpg
 		self.cmdc = CommandControler(gpg)
-		self.jm = JSONManager(gpg = gpg)
 
 	def id_or_list():
-		keys_list = self.jm.get_keys()
+		keys_list = self.cmd.get_keys()
 		id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
 		while id.lower()=='list' or id not in keys_list:
 			if id.lower()=='list' :
@@ -31,13 +29,12 @@ class InteractiveCMD:
 
 	def add_content(self):
 		id = input('Please Introduce an Identifier: ').replace(' ','_')
-
-		while(id in self.jm.get_keys()):
+		while(id in self.cmdc.get_keys()):
 			id = input('Please Introduce an Identifier: ').replace(' ','_')
 
 		for el in KEYS:
 			KEYS[el] = input("Please introduce a value for '" + str(el.lower()) + "' field, or leave it empty: ")
-		new_json_content = self.jm.add(id, dict(KEYS))
+		new_json_content = {id:dict(KEYS)}
 		self.cmdc.add_content(new_json_content)
 
 	def add_menu(self):

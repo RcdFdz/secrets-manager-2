@@ -1,17 +1,10 @@
 import json
-from gpg_tools import GPGTools
 
 class JSONManager:
 	json_content = {}
 
-	def __init__(self, new_json = None, gpg = None):
-		if new_json or new_json == {}:
-			self.json_content = new_json
-		elif gpg:
-			self.json_content = json.loads(str(gpg.decrypt_content()))
-		else:
-			gpg = GPGTools()
-			self.json_content = json.loads(str(gpg.decrypt_content()))
+	def __init__(self, new_json):
+		self.json_content = new_json
 
 	def delete_entry(self, id):
 		self.json_content.pop(id)

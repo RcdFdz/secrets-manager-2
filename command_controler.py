@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from json_manager import JSONManager
 
 class CommandControler:
 	gpg = ''
@@ -31,6 +32,10 @@ class CommandControler:
 
 	def update_keys(self):
 		self.gpg.encrypt_content(str(self.gpg.decrypt_content()))
+
+	def get_keys(self):
+		jm = JSONManager(json.loads(str(self.gpg.decrypt_content())))
+		return jm.get_keys()
 
 	def main(self):
 		pass
