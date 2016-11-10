@@ -9,17 +9,23 @@ class CommandControler:
 	def __init__(self, gpg):
 		self.gpg = gpg
 
-	def add_content(self, json_content):
-		json_content = json.loads(str(json_content).replace("'",'"'))
-		try:
-			old_json_content = json.loads(str(self.gpg.decrypt_content()))
-			for i in json_content.keys():
-				old_json_content[i]=json_content[i]
-			new_json_content = old_json_content
-		except:
-			raise
+	def get_json(self):
+		return str(self.gpg.decrypt_content())
 
-		jkv = json.dumps(new_json_content, sort_keys=True)
+	def set_json(self, json):
+		self.gpg.encrypt_content(json)
+
+	def add_content(self, new_json_content):
+		new_json_content = json.loads(str(new_json_content).replace("'",'"'))
+		if(os.path.isfile(self.gpg.get_file())):
+			old_json_content = json.loads(str(self.gpg.decrypt_content()))
+		else:
+			old_json_content = {}
+		for i in new_json_content.keys():
+			old_json_content[i]=new_json_content[i]
+		final_json_content = old_json_content
+
+		jkv = json.dumps(final_json_content, sort_keys=True)
 		self.gpg.encrypt_content(jkv)
 
 	def show_keys(self):

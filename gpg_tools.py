@@ -17,6 +17,9 @@ class GPGTools:
 		if key:
 			self.KEY = key
 
+	def get_file(self):
+		return self.FILE
+
 	def get_keys(self):
 		files = glob.glob(PUB_KEYS)
 		keys_data = ''

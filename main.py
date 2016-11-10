@@ -2,12 +2,14 @@
 import argparse
 import os
 from interactive_cmd import InteractiveCMD
+from gpg_tools import GPGTools
 
 FILE = 'secrets'
 
 class Main:
 	def main(argv):
-		icmd = InteractiveCMD()
+		gpg = GPGTools(file=FILE)
+		icmd = InteractiveCMD(gpg)
 		parser = argparse.ArgumentParser(description='Manager for sensible information under PGP')
 		parser.add_argument("-i","--interactive", help="display the interactive menu for pwd-manager",
 			action="store_true")
@@ -23,7 +25,7 @@ class Main:
 		elif args.value: get_key_value(args.value, 'value')
 		elif args.all: get_key_value(args.all, 'all')
 		elif args.element: get_key_value(args.element, 'element')
-		elif not os.path.isfile(FILE): interactive_menu()
+		elif not os.path.isfile(FILE): icmd.interactive_menu()
 		else: parser.print_help()
 
 if __name__ == '__main__':

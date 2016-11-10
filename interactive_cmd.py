@@ -9,15 +9,13 @@ KEYS = OrderedDict([('user', None), ('password', None), ('url', None), ('other',
 FILE = 'secrets'
 
 class InteractiveCMD:
-	gpg = ''
 	cmdc = ''
 
 	def __init__(self, gpg):
-		self.gpg = gpg
 		self.cmdc = CommandControler(gpg)
 
-	def id_or_list():
-		keys_list = self.cmd.get_keys()
+	def id_or_list(self):
+		keys_list = self.cmdc.get_keys()
 		id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
 		while id.lower()=='list' or id not in keys_list:
 			if id.lower()=='list' :
@@ -29,26 +27,45 @@ class InteractiveCMD:
 
 	def add_content(self):
 		id = input('Please Introduce an Identifier: ').replace(' ','_')
-		while(id in self.cmdc.get_keys()):
-			id = input('Please Introduce an Identifier: ').replace(' ','_')
+		if(os.path.isfile(FILE)):
+			while(id in self.cmdc.get_keys()):
+				id = input('Please Introduce an Identifier: ').replace(' ','_')
 
 		for el in KEYS:
 			KEYS[el] = input("Please introduce a value for '" + str(el.lower()) + "' field, or leave it empty: ")
 		new_json_content = {id:dict(KEYS)}
 		self.cmdc.add_content(new_json_content)
 
-	def add_menu(self):
-		return(0)
-
 	def modify_content(self):
-		return(0)
+		id = self.id_or_list()
+		json_content = json.loads(self.cmdc.get_json())
+		json_content.pop(id, None)
+		new_json = {}
+		print('Leave all elements without value for delete the entry')
+
+		for e in KEYS:
+			element = input('New ' + str(e) + ': ')
+			new_json[e] = element
+
+		if all( values == '' for key, values in new_json.items()):
+			jkv = json.dumps(json_content, sort_keys=True)
+			self.cmdc.set_json(jkv)
+			print('Done! Identifier ' + id + ' has been deleted')
+		else:
+			json_content[id] = new_json
+			jkv = json.dumps(json_content, sort_keys=True)
+			self.cmdc.set_json(jkv)
+			print('Done! Identifier ' + id + ' has been modified')
 
 	def show_keys(self):
 		self.cmdc.show_keys()
 
-	def print_decrypt_content():
-		id = id_or_list()
-		json_content = json.loads(str(self.gpg.decrypt_content()))
+	def update_keys(self):
+		self.cmdc.update_keys()
+
+	def print_decrypt_content(self):
+		id = self.id_or_list()
+		json_content = json.loads(self.cmdc.get_json())
 
 		output = input('Show values? (Y/n): ')
 		while output.lower() != 'y' and output.lower() != 'n' and output.lower() != 'yes' and output.lower() != 'no' and output.lower() != '':
@@ -68,17 +85,21 @@ class InteractiveCMD:
 	def exit(self):
 		sys.exit(0)
 
-	def input_menu(self, dummy):
-		return(0)
-
-	def initialize(self):
-		return(0)
+	def input_menu(self, option, switcher):
+		while True:
+			try:
+				option = int(option)
+				if option not in range(1,switcher): raise ValueError
+				break
+			except:
+				option = input('Please, choose correct option: ')
+		return option
 
 	def interactive_menu(self):
 		if os.path.isfile(FILE):
 			switcher = {
 				0: lambda: '',
-				1: self.add_menu,
+				1: self.add_content,
 				2: self.modify_content,
 				3: self.print_decrypt_content,
 				4: self.show_keys,
@@ -86,16 +107,18 @@ class InteractiveCMD:
 				6: self.exit
 			}
 			option = input('\t1: Add Key/Value Pair\n\t2: Modify/Delete Key/Value Pair\n\t3: Decrypt Key/Value Pair\n\t4: Show Keys\n\t5: Update public keys\n\t6: Exit\nChoose: ')
+			option = self.input_menu(option, len(switcher))
 			func = switcher.get(option, lambda: 'nothing')
 			return func()
 		else:
 			print('The file' + FILE + 'has not been found, using -i/--interactive argument.')
 			switcher = {
-				0: lambda: '',
-				1: self.initialize,
+				0: lambda:'',
+				1: self.add_content,
 				2: self.exit
 			}
 			option = input('\t1: Add\n\t2: Exit\nChoose: ')
+			option = self.input_menu(option, len(switcher))
 			func = switcher.get(option, lambda: 'nothing')
 			return func()
 
