@@ -15,6 +15,10 @@ class CommandControler:
 	def set_json(self, json):
 		self.gpg.encrypt_content(json)
 
+	def get_keys(self):
+		jm = JSONManager(json.loads(str(self.gpg.decrypt_content())))
+		return jm.get_keys()
+
 	def add_content(self, new_json_content):
 		new_json_content = json.loads(str(new_json_content).replace("'",'"'))
 		if(os.path.isfile(self.gpg.get_file())):
@@ -28,6 +32,9 @@ class CommandControler:
 		jkv = json.dumps(final_json_content, sort_keys=True)
 		self.gpg.encrypt_content(jkv)
 
+	def update_keys(self):
+		self.gpg.encrypt_content(str(self.gpg.decrypt_content()))
+
 	def show_keys(self):
 		try:
 			json_content = json.loads(str(self.gpg.decrypt_content()))
@@ -35,13 +42,6 @@ class CommandControler:
 		 		print(key)
 		except:
 			raise ValueError
-
-	def update_keys(self):
-		self.gpg.encrypt_content(str(self.gpg.decrypt_content()))
-
-	def get_keys(self):
-		jm = JSONManager(json.loads(str(self.gpg.decrypt_content())))
-		return jm.get_keys()
 
 	def main(self):
 		pass
