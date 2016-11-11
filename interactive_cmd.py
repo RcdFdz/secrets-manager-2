@@ -6,13 +6,14 @@ from json_manager import JSONManager
 from command_controler import CommandControler
 
 KEYS = OrderedDict([('user', None), ('password', None), ('url', None), ('other', None)])
-FILE = 'secrets'
 
 class InteractiveCMD:
 	cmdc = ''
+	FILE = ''
 
 	def __init__(self, gpg):
 		self.cmdc = CommandControler(gpg)
+		self.FILE = gpg.get_file()
 
 	def id_or_list(self):
 		keys_list = self.cmdc.get_keys()
@@ -27,7 +28,7 @@ class InteractiveCMD:
 
 	def add_content(self):
 		id = input('Please Introduce an Identifier: ').replace(' ','_')
-		if(os.path.isfile(FILE)):
+		if(os.path.isfile(self.FILE)):
 			while(id in self.cmdc.get_keys()):
 				id = input('Please Introduce an Identifier: ').replace(' ','_')
 
@@ -96,7 +97,7 @@ class InteractiveCMD:
 		return option
 
 	def interactive_menu(self):
-		if os.path.isfile(FILE):
+		if os.path.isfile(self.FILE):
 			switcher = {
 				0: lambda: '',
 				1: self.add_content,
