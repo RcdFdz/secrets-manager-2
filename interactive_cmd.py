@@ -35,7 +35,7 @@ class InteractiveCMD:
 		for el in KEYS:
 			KEYS[el] = input("Please introduce a value for '" + str(el.lower()) + "' field, or leave it empty: ")
 		new_json_content = {id:dict(KEYS)}
-		self.cmdc.add_content(new_json_content)
+		self.cmdc.add_content(json.dumps(new_json_content))
 
 	def modify_content(self):
 		id = self.id_or_list()
@@ -112,7 +112,7 @@ class InteractiveCMD:
 			func = switcher.get(option, lambda: 'nothing')
 			return func()
 		else:
-			print('The file' + FILE + 'has not been found, using -i/--interactive argument.')
+			print('The file' + self.FILE + 'has not been found, using -i/--interactive argument.')
 			switcher = {
 				0: lambda:'',
 				1: self.add_content,

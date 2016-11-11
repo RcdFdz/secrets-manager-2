@@ -42,5 +42,5 @@ class JSONManager:
 		pass
 
 if __name__ == '__main__':
-	sm = JSONManager();
-	sm.main()
+	jm = JSONManager();
+	jm.main()

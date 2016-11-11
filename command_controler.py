@@ -20,7 +20,7 @@ class CommandControler:
 		return jm.get_keys()
 
 	def add_content(self, new_json_content):
-		new_json_content = json.loads(str(new_json_content).replace("'",'"'))
+		new_json_content = json.loads(str(new_json_content))
 		if(os.path.isfile(self.gpg.get_file())):
 			old_json_content = json.loads(str(self.gpg.decrypt_content()))
 		else:
