@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from json_manager import JSONManager
+from gpg_tools import GPGTools
 
 class CommandControler:
 	gpg = ''
@@ -47,5 +48,6 @@ class CommandControler:
 		pass
 
 if __name__ == '__main__':
-	cmdc = CommandControler()
+	gpg = GPGTools()
+	cmdc = CommandControler(gpg)
 	cmdc.main()

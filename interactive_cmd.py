@@ -4,6 +4,7 @@ import sys
 from collections import OrderedDict
 from json_manager import JSONManager
 from command_controler import CommandControler
+from gpg_tools import GPGTools
 
 KEYS = OrderedDict([('user', None), ('password', None), ('url', None), ('other', None)])
 
@@ -127,5 +128,6 @@ class InteractiveCMD:
 		pass
 
 if __name__ == '__main__':
-	icmd = InteractiveCMD()
+	gpg = GPGTools()
+	icmd = InteractiveCMD(gpg)
 	icmd.main()

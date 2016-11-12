@@ -1,4 +1,5 @@
 import json
+import sys
 
 class JSONManager:
 	json_content = {}
@@ -42,5 +43,5 @@ class JSONManager:
 		pass
 
 if __name__ == '__main__':
-	jm = JSONManager();
+	jm = JSONManager(sys.argv[1:]);
 	jm.main()
