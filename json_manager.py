@@ -8,8 +8,11 @@ class JSONManager:
 		self.json_content = new_json
 
 	def delete_entry(self, id):
-		self.json_content.pop(id)
-		return self.json_content
+		try:
+			self.json_content.pop(id)
+			return self.json_content
+		except:
+			KeyError
 
 	def modify_values(self, id, list_values):
 		for key in list_values:
@@ -25,9 +28,25 @@ class JSONManager:
 		self.json_content[new_id] = aux
 		return self.json_content
 
+	def fix_json(self, content):
+		try:
+			json_content = json.loads(content)
+			new_json = json.loads('{"user":"", "password":"", "url":"", "other":""}')
+			for i in new_json.keys():
+				if i in json_content.keys():
+					new_json[i] = json_content[i]
+
+			return json.dumps(new_json)
+
+		except:
+			raise
+			print("Error you must enter a valid json")
+		sys.exit()
+
 	def add(self, id, list_values):
+		list_values = self.fix_json(json.dumps(list_values))
 		if id not in self.json_content:
-			self.json_content[id] = list_values
+			self.json_content[id] = json.loads(list_values)
 			return self.json_content
 		else:
 			raise KeyError
@@ -38,6 +57,15 @@ class JSONManager:
 			return keys
 		except:
 			raise ValueError
+
+	def print_values(self, key, option):
+		if option.lower() == 'all':
+			for e in ['user', 'password', 'url', 'other']:
+				print(e.capitalize() + ': ' + self.json_content[key][e])
+		elif option.lower() == 'user': print(self.json_content[key]['user'])
+		elif option.lower() == 'pass': print(self.json_content[key]['password'])
+		elif option.lower() == 'url': print(self.json_content[key]['url'])
+		elif option.lower() == 'other': print(self.json_content[key]['other'])
 
 	def main(self):
 		pass

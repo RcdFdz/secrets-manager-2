@@ -2,7 +2,6 @@ import json
 import os
 import sys
 from collections import OrderedDict
-from json_manager import JSONManager
 from command_controler import CommandControler
 from gpg_tools import GPGTools
 

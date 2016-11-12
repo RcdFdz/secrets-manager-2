@@ -1,5 +1,6 @@
 import gnupg
 import glob
+import os
 
 BINARY = '/usr/local/bin/gpg'
 GPG_DIR = '~/.gnupg/'
@@ -11,11 +12,17 @@ class GPGTools:
 	FILE = 'secrets'
 	KEY = None
 
-	def __init__(self, file = None, key = None):
+	def __init__(self, file = None, key = None, initialize = None):
 		if file:
 			self.FILE = file
 		if key:
 			self.KEY = key
+		if initialize:
+			self.initilize()
+
+	def initilize(self):
+		if not (os.path.isfile(self.FILE)):
+			self.encrypt_content('{"Example":{"user":"user", "password":"password", "url":"url", "other":"other"}}')
 
 	def get_file(self):
 		return self.FILE
