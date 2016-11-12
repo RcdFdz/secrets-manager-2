@@ -2,6 +2,8 @@ import pytest
 import builtins
 import os
 import json
+import time
+
 from command_controler import CommandControler
 from gpg_tools import GPGTools
 
