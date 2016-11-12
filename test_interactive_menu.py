@@ -33,58 +33,10 @@ def get_GPG(message, secrets_file, secrets_key):
 
 	return gpg
 
-def test_id_or_list(monkeypatch, capsys):
-	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
-					'secrets_tmp14', '12345')
-
-	aux = ['list', 'One']
-	def mock_input_user(*args, **kwargs):
-		a = aux[0]
-		del aux[0]
-		return a
-
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
-
-	icmd = InteractiveCMD(gpg)
-	icmd.id_or_list()
-	out, err = capsys.readouterr()
-
-	assert out == 'One\n'
-
-	remove_files(['secrets_tmp14'])
-
-def test_add_content(monkeypatch):
-	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"},"Two": {"user":"user2","password":"pass2","url":"url2","other":"other2"}}',
-					'secrets_tmp15', '12345')
-
-	gpg2 = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
-					'secrets_tmp16', '12345')
-
-	aux = ['Two', 'user2', 'pass2', 'url2', 'other2']
-	def mock_input_user(*args, **kwargs):
-		a = aux[0]
-		del aux[0]
-		return a
-
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
-
-	icmd = InteractiveCMD(gpg2)
-	icmd.add_content()
-
-	json_gpg = json.loads(str(gpg.decrypt_content()))
-	json_gpg2 = json.loads(str(gpg2.decrypt_content()))
-
-	assert json_gpg == json_gpg2
-
-	remove_files(['secrets_tmp15','secrets_tmp16'])
-
-def test_add_content_no_secrets(monkeypatch):
+def test_interactive_menu_no_file_add_content(monkeypatch):
 	gpg = GPGTools(key = '12345')
 
-	gpg2 = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
-					'secrets_tmp17', '12345')
-
-	aux = ['One', 'user1', 'pass1', 'url1', 'other1']
+	aux = ['1','One', 'user1', 'pass1', 'url1', 'other1']
 	def mock_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
@@ -93,23 +45,20 @@ def test_add_content_no_secrets(monkeypatch):
 	monkeypatch.setattr(builtins, 'input',mock_input_user)
 
 	icmd = InteractiveCMD(gpg)
-	icmd.add_content()
+	icmd.interactive_menu()
 
+	json_ex = json.loads('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}')
 	json_gpg = json.loads(str(gpg.decrypt_content()))
-	json_gpg2 = json.loads(str(gpg2.decrypt_content()))
 
-	assert json_gpg == json_gpg2
+	for i in json_gpg["One"]:
+		assert json_gpg["One"][i] == json_ex["One"][i]
 
-	remove_files(['secrets','secrets_tmp17'])
+	remove_files(['secrets'])
 
-def test_modify_content(monkeypatch, capsys):
-	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
-					'secrets_tmp18', '12345')
+def test_interactive_menu_no_file_exit(monkeypatch):
+	gpg = GPGTools(key = '12345')
 
-	gpg2 = get_GPG('{"One": {"user":"user2","password":"pass1","url":"url1","other":"other1"}}',
-					'secrets_tmp19', '12345')
-
-	aux = ['One', 'user2', 'pass1', 'url1','other1']
+	aux = ['2']
 	def mock_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
@@ -118,22 +67,70 @@ def test_modify_content(monkeypatch, capsys):
 	monkeypatch.setattr(builtins, 'input',mock_input_user)
 
 	icmd = InteractiveCMD(gpg)
-	icmd.modify_content()
+
+	with pytest.raises(SystemExit):
+		icmd.interactive_menu()
+
+def test_interactive_menu_with_file_add_content(monkeypatch):
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
+					'secrets_tmp29', '12345')
+
+	aux = ['1','Two', 'user2', 'pass2', 'url2', 'other2']
+	def mock_input_user(*args, **kwargs):
+		a = aux[0]
+		del aux[0]
+		return a
+
+	monkeypatch.setattr(builtins, 'input',mock_input_user)
+
+	icmd = InteractiveCMD(gpg)
+	icmd.interactive_menu()
+
+	json_ex = json.loads('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"},"Two": {"user":"user2","password":"pass2","url":"url2","other":"other2"}}')
+	json_gpg = json.loads(str(gpg.decrypt_content()))
+
+	for i in json_gpg["Two"]:
+		assert json_gpg["Two"][i] == json_ex["Two"][i]
+
+	for i in json_gpg["One"]:
+		assert json_gpg["One"][i] == json_ex["One"][i]
+
+	remove_files(['secrets_tmp29'])
+
+def test_interactive_menu_with_file_modify_content(monkeypatch, capsys):
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"},"Two": {"user":"user2","password":"pass2","url":"url2","other":"other2"}}',
+					'secrets_tmp30', '12345')
+
+	aux = ['2','One', 'user2', 'pass2', 'url2', 'other2']
+	def mock_input_user(*args, **kwargs):
+		a = aux[0]
+		del aux[0]
+		return a
+
+	monkeypatch.setattr(builtins, 'input',mock_input_user)
+
+	icmd = InteractiveCMD(gpg)
+	icmd.interactive_menu()
 	out, err = capsys.readouterr()
 
-	json1 = json.loads(str(gpg.decrypt_content()))
-	json2 = json.loads(str(gpg2.decrypt_content()))
+	json_ex = json.loads('{"One": {"user":"user2","password":"pass2","url":"url2","other":"other2"},"Two": {"user":"user2","password":"pass2","url":"url2","other":"other2"}}')
+	json_gpg = json.loads(str(gpg.decrypt_content()))
 
-	assert json1['One']['user'] == json2['One']['user']
+	for i in json_gpg["Two"]:
+		assert json_gpg["Two"][i] == json_ex["Two"][i]
+
+	for i in json_gpg["One"]:
+		assert json_gpg["One"][i] == json_ex["One"][i]
+
 	assert out == 'Leave all elements without value for delete the entry\nDone! Identifier One has been modified\n'
 
-	remove_files(['secrets_tmp18','secrets_tmp19'])
+	remove_files(['secrets_tmp30'])
 
-def test_modify_content_delete(monkeypatch, capsys):
-	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
-					'secrets_tmp20', '12345')
+def test_interactive_menu_with_file_modify_content_delete(monkeypatch, capsys):
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"},"Two": {"user":"user2","password":"pass2","url":"url2","other":"other2"}}',
+					'secrets_tmp31', '12345')
 
-	aux = ['One', '', '', '','']
+	aux = ['2','One', '', '', '', '']
 	def mock_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
@@ -142,63 +139,105 @@ def test_modify_content_delete(monkeypatch, capsys):
 	monkeypatch.setattr(builtins, 'input',mock_input_user)
 
 	icmd = InteractiveCMD(gpg)
-	icmd.modify_content()
+	icmd.interactive_menu()
 	out, err = capsys.readouterr()
 
-	json1 = json.loads(str(gpg.decrypt_content()))
+	json_ex = json.loads('{"Two": {"user":"user2","password":"pass2","url":"url2","other":"other2"}}')
+	json_gpg = json.loads(str(gpg.decrypt_content()))
 
-	assert json1 == {}
+	for i in json_gpg["Two"]:
+		assert json_gpg["Two"][i] == json_ex["Two"][i]
+
+	with pytest.raises(KeyError):
+		json_gpg["One"]
+
 	assert out == 'Leave all elements without value for delete the entry\nDone! Identifier One has been deleted\n'
 
-	remove_files(['secrets_tmp20'])
+	remove_files(['secrets_tmp31'])
 
-def test_show_keys(capsys):
-	gpg = get_GPG('{"One": 1, "Two": 2}', 'secrets_tmp21', '12345')
+def test_interactive_menu_with_file_print_decrypt_content(monkeypatch, capsys):
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
+					'secrets_tmp32', '12345')
+
+	aux = ['3','Two', 'list', 'One','Y','N']
+	def mock_input_user(*args, **kwargs):
+		a = aux[0]
+		del aux[0]
+		return a
+
+	monkeypatch.setattr(builtins, 'input',mock_input_user)
 
 	icmd = InteractiveCMD(gpg)
-	icmd.show_keys()
+	icmd.interactive_menu()
+	out, err = capsys.readouterr()
 
+	assert out == 'One\nuser: user1\npassword: pass1\nurl: url1\nother: other1\n'
+
+	remove_files(['secrets_tmp32'])
+
+def test_interactive_menu_with_file_print_decrypt_content(monkeypatch, capsys):
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"},"Two": {"user":"user2","password":"pass2","url":"url2","other":"other2"}}',
+					'secrets_tmp33', '12345')
+
+	aux = ['4']
+	def mock_input_user(*args, **kwargs):
+		a = aux[0]
+		del aux[0]
+		return a
+
+	monkeypatch.setattr(builtins, 'input',mock_input_user)
+
+	icmd = InteractiveCMD(gpg)
+	icmd.interactive_menu()
 	out, err = capsys.readouterr()
 
 	assert out == 'One\nTwo\n'
 
-	remove_files(['secrets_tmp21'])
+	remove_files(['secrets_tmp33'])
 
-def test_update_keys():
-	get_files('secrets_tmp22', 'secrets_tmp23')
+def test_update_keys(monkeypatch):
+	get_files('secrets_tmp34', 'secrets_tmp35')
 
-	gpg = GPGTools(file = 'secrets_tmp22', key = '12345')
+	gpg = GPGTools(file = 'secrets_tmp34', key = '12345')
+	aux = ['5']
+	def mock_input_user(*args, **kwargs):
+		a = aux[0]
+		del aux[0]
+		return a
+
+	monkeypatch.setattr(builtins, 'input',mock_input_user)
+
 	icmd = InteractiveCMD(gpg)
-	icmd.update_keys()
+	icmd.interactive_menu()
 
-	file1 = open('secrets_tmp22','r')
-	file2 = open('secrets_tmp23','r')
+	file1 = open('secrets_tmp34','r')
+	file2 = open('secrets_tmp35','r')
 
 	assert file1.read() != file2.read()
 
-	remove_files(['secrets_tmp22','secrets_tmp23'])
+	remove_files(['secrets_tmp34','secrets_tmp35'])
 
 def test_no_update_keys():
 	''' This test ensure that the codification works properly
 	in the future this could be moved to the test_gpg_tools
 	'''
-	get_files('secrets_tmp24', 'secrets_tmp25')
+	get_files('secrets_tmp36', 'secrets_tmp37')
 
-	gpg = GPGTools(file = 'secrets_tmp24', key = '12345')
+	gpg = GPGTools(file = 'secrets_tmp36', key = '12345')
 	icmd = InteractiveCMD(gpg)
 
-	file1 = open('secrets_tmp24','r')
-	file2 = open('secrets_tmp25','r')
+	file1 = open('secrets_tmp36','r')
+	file2 = open('secrets_tmp37','r')
 
 	assert file1.read() == file2.read()
 
-	remove_files(['secrets_tmp24','secrets_tmp25'])
+	remove_files(['secrets_tmp36','secrets_tmp37'])
 
-def test_decrypt_content_ok(monkeypatch, capsys):
-	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
-					'secrets_tmp25', '12345')
+def test_interactive_menu_no_file_exit(monkeypatch):
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"},"Two": {"user":"user2","password":"pass2","url":"url2","other":"other2"}}',
+					'secrets_tmp38', '12345')
 
-	aux = ['One','Y','N']
+	aux = ['6']
 	def mock_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
@@ -207,76 +246,9 @@ def test_decrypt_content_ok(monkeypatch, capsys):
 	monkeypatch.setattr(builtins, 'input',mock_input_user)
 
 	icmd = InteractiveCMD(gpg)
-	icmd.print_decrypt_content()
-	out, err = capsys.readouterr()
 
-	assert out == 'user: user1\npassword: pass1\nurl: url1\nother: other1\n'
-
-	remove_files(['secrets_tmp25'])
-
-def test_decrypt_content_ko(monkeypatch, capsys):
-	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
-					'secrets_tmp26', '12345')
-
-	aux = ['One','Y','N']
-	def mock_input_user(*args, **kwargs):
-		a = aux[0]
-		del aux[0]
-		return a
-
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
-
-	icmd = InteractiveCMD(gpg)
-	icmd.print_decrypt_content()
-	out, err = capsys.readouterr()
-
-	assert out != 'user: user\npassword: pass1\nurl: url1\nother: other1\n'
-
-	remove_files(['secrets_tmp26'])
-
-def test_decrypt_content_fail_id(monkeypatch, capsys):
-	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
-					'secrets_tmp27', '12345')
-
-	aux = ['Two','One','Y','N']
-	def mock_input_user(*args, **kwargs):
-		a = aux[0]
-		del aux[0]
-		return a
-
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
-
-	icmd = InteractiveCMD(gpg)
-	icmd.print_decrypt_content()
-	out, err = capsys.readouterr()
-
-	assert out == 'user: user1\npassword: pass1\nurl: url1\nother: other1\n'
-
-	remove_files(['secrets_tmp27'])
-
-def test_decrypt_content_copy_clipboard(monkeypatch):
-	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
-					'secrets_tmp28', '12345')
-
-	aux = ['One','N','password']
-	def mock_input_user(*args, **kwargs):
-		a = aux[0]
-		del aux[0]
-		return a
-
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
-
-	icmd = InteractiveCMD(gpg)
-	icmd.print_decrypt_content()
-	out = clipboard.paste()
-
-	assert out == 'pass1\n'
-
-	remove_files(['secrets_tmp28'])
-
-def test_exit():
-	gpg = GPGTools()
-
-	icmd = InteractiveCMD(gpg)
 	with pytest.raises(SystemExit):
-		icmd.exit()
+		icmd.interactive_menu()
+
+	remove_files(['secrets_tmp38'])
+
