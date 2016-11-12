@@ -3,8 +3,16 @@ import builtins
 import os
 import json
 import clipboard
+import time
 from interactive_cmd import InteractiveCMD
 from gpg_tools import GPGTools
+
+if os.path.isfile('secrets'):
+	timestr = time.strftime("%Y%m%d-%H%M%S")
+	os.rename('secrets', '._secrets.bkp'+str(timestr))
+
+for i in range(1,100):
+	if os.path.isfile('secrets'+str(i)): os.remove('secrets'+str(i))
 
 def get_files(file_name1, file_name2):
 	file1 = open(file_name1, 'w')
@@ -71,7 +79,7 @@ def test_add_content(monkeypatch):
 	remove_files(['secrets_tmp15','secrets_tmp16'])
 
 def test_add_content_no_secrets(monkeypatch):
-	gpg = GPGTools()
+	gpg = GPGTools(key = '12345')
 
 	gpg2 = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
 					'secrets_tmp17', '12345')
@@ -246,7 +254,7 @@ def test_decrypt_content_fail_id(monkeypatch, capsys):
 
 	remove_files(['secrets_tmp27'])
 
-def test_decrypt_content_copy_clipboard(monkeypatch, capsys):
+def test_decrypt_content_copy_clipboard(monkeypatch):
 	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
 					'secrets_tmp28', '12345')
 
@@ -275,3 +283,25 @@ def test_exit():
 		icmd.exit()
 
 	remove_files(['secrets_tmp29'])
+
+def test_interactive_menu_no_file_add_content(monkeypatch):
+	gpg = GPGTools(key = '12345')
+
+	aux = ['1','One', 'user1', 'pass1', 'url1', 'other1']
+	def mock_input_user(*args, **kwargs):
+		a = aux[0]
+		del aux[0]
+		return a
+
+	monkeypatch.setattr(builtins, 'input',mock_input_user)
+
+	icmd = InteractiveCMD(gpg)
+	icmd.interactive_menu()
+
+	json_ex = json.loads('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}')
+	json_gpg = json.loads(str(gpg.decrypt_content()))
+
+	for i in json_gpg["One"]:
+		assert json_gpg["One"][i] == json_ex["One"][i]
+
+	remove_files(['secrets'])
