@@ -1,5 +1,3 @@
-# OBSOLET (TO REWRITE)
-
 ### Password Manager
 The aim to the present project is to solve the shared secrets problem in small teams.
 
@@ -11,11 +9,9 @@ Once the previus requirements are satisfied will be necessary to copy a public k
 If your team is allready working with secrets-manager someone from the team will have to update the `secrets` file with your key.
 
 ### How it works
-The first time that the script is runs asks for key/value input and generates the secrets file by using the public keys saved in pub-keys folder.
+The Secrets Manager can be run in two modes, by using an interactive mode or by using the command line.
 
-Before the secret file is generated the menu accepts:
-* Add Key/Value Pair
-* Exit
+The first time that Secrets Manager there are only two options available, _Add a key/Value Pair_ by interactive mode or by command line arguments.
 
 Once there is at least one secret, the application allows to work with an small CRUD in interactive mode.
 
@@ -27,29 +23,62 @@ The menu accepts:
 * Update public keys
 * Exit
 
-There is also the posibility to work without interactive mode, by using terminal arguments:
-
+Command line outputs first time it runs:
 ```
-➜  secrets-manager-3 git:(master) ✗ python3 s-manager.py -h
+➜  secrets-manager-3 git:(master) ✗ python3 main.py -h
+usage: main.py [-h] [-i] [-ak identifier {"user":"<user>", ...}]
 
-usage: s-manager.py [-h] [-i] [-l] [-k identifier] [-v identifier]
-                      [-a identifier]
+Manager for sensible information under PGP. Use -i/--interactive or
+-ak/--addkey to introduce your first key and for more option will be
+displayed.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i, --interactive     display the interactive menu for pwd-manager
+  -ak identifier {"user":"<user>", ...}, --addkey identifier {"user":"<user>", ...}
+                        add element to secrets, second argument must be a
+                        valid json string. Allowed keys user, password, url
+                        and other
+```
+Command line outputs when keys exist:
+```
+➜  secrets-manager-3 git:(refactor-class) ✗ ./main.py -h
+usage: main.py [-h] [-i] [-l] [-u identifier] [-p identifier] [-ur identifier]
+               [-o identifier] [-a identifier]
+               [-ak identifier {"user":"<user>", ...}]
+               [-mk identifier {"user":"<new_user>", ...}]
+               [-mi old_identifier new_identifier] [-d identifier]
 
 Manager for sensible information under PGP
 
 optional arguments:
   -h, --help            show this help message and exit
-  -i, --interactive     display the interactive menu for s-manager
+  -i, --interactive     display the interactive menu for pwd-manager
   -l, --list            list all the stored identifiers
-  -k identifier, --key identifier
-                        return the key for the given identifier
-  -v identifier, --value identifier
-                        return the value for the given identifier
+  -u identifier, --user identifier
+                        return the username for the given identifier
+  -p identifier, --password identifier
+                        return the password for the given identifier
+  -ur identifier, --url identifier
+                        return the URL for the given identifier
+  -o identifier, --other identifier
+                        return the other for the given identifier
   -a identifier, --all identifier
-                        display the key and value pair for the given
-                        identifier
+                        display all values for the given identifier
+  -ak identifier {"user":"<user>", ...}, --addkey identifier {"user":"<user>", ...}
+                        add element to secrets, second argument must be a
+                        valid json string. Allowed keys user, password, url
+                        and other
+  -mk identifier {"user":"<new_user>", ...}, --modkey identifier {"user":"<new_user>", ...}
+                        modify element to secrets, second argument must be a
+                        valid json string. Allowed keys user, password, url
+                        and other
+  -mi old_identifier new_identifier, --modid old_identifier new_identifier
+                        modify id from an element
+  -d identifier, --delete identifier
+                        modify element to secrets, second argument must be a
+                        valid json string
 ```
-
 ### Requirements
 This projects requires python3 and GPG Suite version 2016.07 (https://gpgtools.org/) or greater.
 
