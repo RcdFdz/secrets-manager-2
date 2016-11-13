@@ -2,7 +2,6 @@ import pytest
 import builtins
 import os
 import json
-import clipboard
 import time
 from interactive_cmd import InteractiveCMD
 from gpg_tools import GPGTools
