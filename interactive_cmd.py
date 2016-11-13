@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-import clipboard
+import pyperclip
 from collections import OrderedDict
 from command_controler import CommandControler
 from gpg_tools import GPGTools
@@ -82,7 +82,7 @@ class InteractiveCMD:
 			output = input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
 
 		if output.lower() != '' and  output.lower() != 'no' and output.lower() != 'n':
-			clipboard.copy(json_content[id][output.lower()])
+			pyperclip.copy(json_content[id][output.lower()])
 
 	def exit(self):
 		sys.exit(0)

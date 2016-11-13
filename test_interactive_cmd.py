@@ -2,7 +2,7 @@ import pytest
 import builtins
 import os
 import json
-import clipboard
+import pyperclip
 import time
 from interactive_cmd import InteractiveCMD
 from gpg_tools import GPGTools
@@ -268,7 +268,7 @@ def test_decrypt_content_copy_clipboard(monkeypatch):
 
 	icmd = InteractiveCMD(gpg)
 	icmd.print_decrypt_content()
-	out = clipboard.paste()
+	out = pyperclip.paste()
 
 	assert out == 'pass1'
 
