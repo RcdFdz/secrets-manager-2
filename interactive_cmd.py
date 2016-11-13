@@ -77,13 +77,15 @@ class InteractiveCMD:
 		if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
 			for e in KEYS:
 				print(str(e) + ': ' + str(json_content[id][e]))
-		if platform.system() == 'Darwin':
 			output = input('Copy any elemento to clipboard? (N/element name): ' )
 			while output.lower() not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
 				output = input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
 
 		if output.lower() != '' and  output.lower() != 'no' and output.lower() != 'n':
-			pyperclip.copy(json_content[id][output.lower()])
+			if platform.system() == 'Darwin':
+				pyperclip.copy(json_content[id][output.lower()])
+			else:
+				print('Only Darwin platforms')
 
 	def exit(self):
 		sys.exit(0)

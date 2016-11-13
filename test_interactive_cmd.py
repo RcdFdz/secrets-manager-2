@@ -255,23 +255,27 @@ def test_decrypt_content_fail_id(monkeypatch, capsys):
 
 	remove_files(['secrets_tmp27'])
 
-def test_decrypt_content_copy_clipboard(monkeypatch):
+def test_decrypt_content_copy_clipboard(monkeypatch, capsys):
 	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
 					'secrets_tmp28', '12345')
+
+	aux = ['One','N','password']
+	def mock_input_user(*args, **kwargs):
+		a = aux[0]
+		del aux[0]
+		return a
+
+	monkeypatch.setattr(builtins, 'input',mock_input_user)
+
+	icmd = InteractiveCMD(gpg)
+	icmd.print_decrypt_content()
+	out, err = capsys.readouterr()
+
 	if platform.system() == 'Darwin':
-		aux = ['One','N','password']
-		def mock_input_user(*args, **kwargs):
-			a = aux[0]
-			del aux[0]
-			return a
-
-		monkeypatch.setattr(builtins, 'input',mock_input_user)
-
-		icmd = InteractiveCMD(gpg)
-		icmd.print_decrypt_content()
 		out = pyperclip.paste()
-
 		assert out == 'pass1'
+	else:
+		assert out == 'Only Darwin platforms'
 
 	remove_files(['secrets_tmp28'])
 
