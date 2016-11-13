@@ -143,3 +143,96 @@ def test_no_update_keys():
 	assert file1.read() == file2.read()
 
 	remove_files(['secrets_tmp12','secrets_tmp13'])
+
+def test_add_content_id_json():
+	json_gpg = {"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"},"example": {"user":"example","password":"example","url":"example","other":"example"}}
+
+	gpg2 = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
+							'secrets_tmp39', '12345')
+
+	cmdc = CommandControler(gpg2)
+	cmdc.add_content_id_json("example", '{"user":"example","password":"example","url":"example","other":"example"}')
+
+	json_gpg2 = json.loads(str(gpg2.decrypt_content()))
+
+	assert json_gpg2 == json_gpg
+
+	remove_files(['secrets_tmp39'])
+
+def test_add_content_id_json_firt_element():
+	gpg = GPGTools()
+	cmdc = CommandControler(gpg)
+	cmdc.add_content_id_json("example", '{"user":"example","password":"example","url":"example","other":"example"}')
+
+	json_gpg = json.loads(str(gpg.decrypt_content()))
+
+	assert json_gpg == {"example": {"user":"example","password":"example","url":"example","other":"example"}}
+
+	remove_files(['secrets'])
+
+def test_modify_content():
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
+							'secrets_tmp40', '12345')
+
+	cmdc = CommandControler(gpg)
+	cmdc.modify_content('One','{"user":"user2"}')
+
+	json_gpg = json.loads(str(gpg.decrypt_content()))
+
+	assert json_gpg == {"One": {"user":"user2","password":"pass1","url":"url1","other":"other1"}}
+	remove_files(['secrets_tmp40'])
+
+def test_modify_content_no_id():
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
+							'secrets_tmp41', '12345')
+
+	cmdc = CommandControler(gpg)
+	with pytest.raises(KeyError):
+		cmdc.modify_content('Two','{"user":"user2"}')
+
+	remove_files(['secrets_tmp41'])
+
+def test_modify_id():
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
+							'secrets_tmp42', '12345')
+
+	cmdc = CommandControler(gpg)
+	cmdc.modify_id('One','Two')
+
+	json_gpg = json.loads(str(gpg.decrypt_content()))
+
+	assert json_gpg == {"Two": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}
+	remove_files(['secrets_tmp42'])
+
+def test_modify_id_no_id():
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
+							'secrets_tmp43', '12345')
+
+	cmdc = CommandControler(gpg)
+	with pytest.raises(KeyError):
+		cmdc.modify_id('Two','Three')
+	remove_files(['secrets_tmp43'])
+
+def test_del_id():
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
+							'secrets_tmp44', '12345')
+
+	cmdc = CommandControler(gpg)
+	cmdc.del_id('One')
+
+	json_gpg = json.loads(str(gpg.decrypt_content()))
+
+	assert json_gpg == {}
+	remove_files(['secrets_tmp44'])
+
+def test_del_id_no_id():
+	gpg = get_GPG('{"One": {"user":"user1","password":"pass1","url":"url1","other":"other1"}}',
+							'secrets_tmp44', '12345')
+
+	cmdc = CommandControler(gpg)
+	with pytest.raises(KeyError):
+		cmdc.del_id('Two')
+
+	remove_files(['secrets_tmp44'])
+
+

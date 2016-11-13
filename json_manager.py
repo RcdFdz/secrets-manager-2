@@ -8,11 +8,8 @@ class JSONManager:
 		self.json_content = new_json
 
 	def delete_entry(self, id):
-		try:
-			self.json_content.pop(id)
-			return self.json_content
-		except:
-			KeyError
+		self.json_content.pop(id)
+		return self.json_content
 
 	def modify_values(self, id, list_values):
 		for key in list_values:
@@ -36,7 +33,7 @@ class JSONManager:
 				if i in json_content.keys():
 					new_json[i] = json_content[i]
 
-			return json.dumps(new_json)
+			return new_json
 
 		except:
 			raise
@@ -46,7 +43,7 @@ class JSONManager:
 	def add(self, id, list_values):
 		list_values = self.fix_json(json.dumps(list_values))
 		if id not in self.json_content:
-			self.json_content[id] = json.loads(list_values)
+			self.json_content[id] = list_values
 			return self.json_content
 		else:
 			raise KeyError

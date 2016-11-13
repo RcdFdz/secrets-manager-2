@@ -13,6 +13,10 @@ class CommandControler:
 	def get_key_value(self, key, option):
 		jm = JSONManager(json.loads(str(self.gpg.decrypt_content())))
 		jm.print_values(key, option)
+		try:
+			pass
+		except Exception as e:
+			raise e
 
 	def get_json(self):
 		return str(self.gpg.decrypt_content())
@@ -42,7 +46,7 @@ class CommandControler:
 			jm = JSONManager(json.loads(str(self.gpg.decrypt_content())))
 		else:
 			jm = JSONManager(json.loads('{}'))
-		jkv = jm.add(id, json.loads(str(json_content[0])))
+		jkv = jm.add(id, json.loads(str(json_content)))
 		jkv = json.dumps(jkv)
 		self.gpg.encrypt_content(jkv)
 
@@ -51,7 +55,7 @@ class CommandControler:
 			jm = JSONManager(json.loads(str(self.gpg.decrypt_content())))
 		else:
 			jm = JSONManager(json.loads('{}'))
-		jkv = jm.modify_values(id, json.loads(str(json_content[0])))
+		jkv = jm.modify_values(id, json.loads(str(json_content)))
 		jkv = json.dumps(jkv)
 		self.gpg.encrypt_content(jkv)
 
