@@ -269,12 +269,12 @@ def test_decrypt_content_copy_clipboard(monkeypatch, capsys):
 
 	icmd = InteractiveCMD(gpg)
 	icmd.print_decrypt_content()
-	out, err = capsys.readouterr()
 
 	if platform.system() == 'Darwin':
 		clip_out = pyperclip.paste()
 		assert clip_out == 'pass1'
 	else:
+		out, err = capsys.readouterr()
 		assert out == 'Only Darwin platforms\n'
 
 	remove_files(['secrets_tmp28'])
