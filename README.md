@@ -1,3 +1,6 @@
+Travis Testing status:
+![alt text](https://travis-ci.org/RcdFdz/secrets-manager-3.svg?branch=master "Test status")
+
 ### Password Manager
 The aim to the present project is to solve the shared secrets problem in small teams.
 
