@@ -270,7 +270,7 @@ def test_decrypt_content_copy_clipboard(monkeypatch):
 	icmd.print_decrypt_content()
 	out = clipboard.paste()
 
-	assert out == 'pass1\n'
+	assert out == 'pass1'
 
 	remove_files(['secrets_tmp28'])
 
