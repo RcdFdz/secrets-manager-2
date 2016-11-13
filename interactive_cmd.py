@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import pyperclip
+import platform
 from collections import OrderedDict
 from command_controler import CommandControler
 from gpg_tools import GPGTools
@@ -76,10 +77,10 @@ class InteractiveCMD:
 		if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
 			for e in KEYS:
 				print(str(e) + ': ' + str(json_content[id][e]))
-
-		output = input('Copy any elemento to clipboard? (N/element name): ' )
-		while output.lower() not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
-			output = input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
+		if platform.system() == 'Darwin':
+			output = input('Copy any elemento to clipboard? (N/element name): ' )
+			while output.lower() not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
+				output = input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
 
 		if output.lower() != '' and  output.lower() != 'no' and output.lower() != 'n':
 			pyperclip.copy(json_content[id][output.lower()])
