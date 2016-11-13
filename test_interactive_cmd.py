@@ -272,10 +272,10 @@ def test_decrypt_content_copy_clipboard(monkeypatch, capsys):
 	out, err = capsys.readouterr()
 
 	if platform.system() == 'Darwin':
-		out = pyperclip.paste()
-		assert out == 'pass1'
+		clip_out = pyperclip.paste()
+		assert clip_out == 'pass1'
 	else:
-		assert out == 'Only Darwin platforms'
+		assert out == 'Only Darwin platforms\n'
 
 	remove_files(['secrets_tmp28'])
 
