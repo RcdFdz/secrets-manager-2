@@ -275,7 +275,7 @@ def test_decrypt_content_copy_clipboard(monkeypatch, capsys):
 		assert clip_out == 'pass1'
 	else:
 		out, err = capsys.readouterr()
-		assert out == 'Only Darwin platforms\n'
+		assert out == ''
 
 	remove_files(['secrets_tmp28'])
 
