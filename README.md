@@ -1,4 +1,4 @@
-Travis Testing status:
+Travis CI Testing status:
 ![alt text](https://travis-ci.org/RcdFdz/secrets-manager-3.svg?branch=master "Test status")
 
 ### Password Manager
