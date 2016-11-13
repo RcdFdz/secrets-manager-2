@@ -160,7 +160,7 @@ def test_add_content_id_json():
 	remove_files(['secrets_tmp39'])
 
 def test_add_content_id_json_firt_element():
-	gpg = GPGTools()
+	gpg = GPGTools(key = '12345')
 	cmdc = CommandControler(gpg)
 	cmdc.add_content_id_json("example", '{"user":"example","password":"example","url":"example","other":"example"}')
 
