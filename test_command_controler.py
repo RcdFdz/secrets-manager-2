@@ -1,5 +1,5 @@
 import pytest
-import builtins
+import __builtin__
 import os
 import json
 import time

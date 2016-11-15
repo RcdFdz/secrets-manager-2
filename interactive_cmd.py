@@ -19,23 +19,23 @@ class InteractiveCMD:
 
 	def id_or_list(self):
 		keys_list = self.cmdc.get_keys()
-		id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
+		id = raw_input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
 		while id.lower()=='list' or id not in keys_list:
 			if id.lower()=='list' :
 				self.show_keys()
-				id = input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
+				id = raw_input("Introduce the identifier name or 'list' for list all identifiers: ").replace(' ','_')
 			if id not in keys_list:
-				id = input("Introduce a valid identifier name or 'list' for list all identifiers: ").replace(' ','_')
+				id = raw_input("Introduce a valid identifier name or 'list' for list all identifiers: ").replace(' ','_')
 		return id
 
 	def add_content(self):
-		id = input('Please Introduce an Identifier: ').replace(' ','_')
+		id = raw_input('Please Introduce an Identifier: ').replace(' ','_')
 		if(os.path.isfile(self.FILE)):
 			while(id in self.cmdc.get_keys()):
-				id = input('Please Introduce an Identifier: ').replace(' ','_')
+				id = raw_input('Please Introduce an Identifier: ').replace(' ','_')
 
 		for el in KEYS:
-			KEYS[el] = input("Please introduce a value for '" + str(el.lower()) + "' field, or leave it empty: ")
+			KEYS[el] = raw_input("Please introduce a value for '" + str(el.lower()) + "' field, or leave it empty: ")
 		new_json_content = {id:dict(KEYS)}
 		self.cmdc.add_content(json.dumps(new_json_content))
 
@@ -47,7 +47,7 @@ class InteractiveCMD:
 		print('Leave all elements without value for delete the entry')
 
 		for e in KEYS:
-			element = input('New ' + str(e) + ': ')
+			element = raw_input('New ' + str(e) + ': ')
 			new_json[e] = element
 
 		if all( values == '' for key, values in new_json.items()):
@@ -70,17 +70,17 @@ class InteractiveCMD:
 		id = self.id_or_list()
 		json_content = json.loads(self.cmdc.get_json())
 
-		output = input('Show values? (Y/n): ')
+		output = raw_input('Show values? (Y/n): ')
 		while output.lower() != 'y' and output.lower() != 'n' and output.lower() != 'yes' and output.lower() != 'no' and output.lower() != '':
-			output = input('Show values? (Y/n): ')
+			output = raw_input('Show values? (Y/n): ')
 
 		if output.lower() == '' or output.lower() == 'y' or output.lower() == 'yes':
 			for e in KEYS:
 				print(str(e) + ': ' + str(json_content[id][e]))
 
-		output = input('Copy any elemento to clipboard? (N/element name): ' )
+		output = raw_input('Copy any elemento to clipboard? (N/element name): ' )
 		while output.lower() not in KEYS and output.lower() != '' and output.lower() != 'n' and output.lower() != 'no':
-				output = input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
+				output = raw_input("Please choose 'no' for leave. For copy and element 'user', 'password', 'url' or 'other': " )
 
 		if output.lower() != '' and  output.lower() != 'no' and output.lower() != 'n':
 			if platform.system() == 'Darwin':
@@ -91,14 +91,14 @@ class InteractiveCMD:
 	def exit(self):
 		sys.exit(0)
 
-	def input_menu(self, option, switcher):
+	def raw_input_menu(self, option, switcher):
 		while True:
 			try:
 				option = int(option)
 				if option not in range(1,switcher): raise ValueError
 				break
 			except:
-				option = input('Please, choose correct option: ')
+				option = raw_input('Please, choose correct option: ')
 		return option
 
 	def interactive_menu(self):
@@ -112,8 +112,8 @@ class InteractiveCMD:
 				5: self.update_keys,
 				6: self.exit
 			}
-			option = input('\t1: Add Key/Value Pair\n\t2: Modify/Delete Key/Value Pair\n\t3: Decrypt Key/Value Pair\n\t4: Show Keys\n\t5: Update public keys\n\t6: Exit\nChoose: ')
-			option = self.input_menu(option, len(switcher))
+			option = raw_input('\t1: Add Key/Value Pair\n\t2: Modify/Delete Key/Value Pair\n\t3: Decrypt Key/Value Pair\n\t4: Show Keys\n\t5: Update public keys\n\t6: Exit\nChoose: ')
+			option = self.raw_input_menu(option, len(switcher))
 			func = switcher.get(option, lambda: 'nothing')
 			return func()
 		else:
@@ -123,8 +123,8 @@ class InteractiveCMD:
 				1: self.add_content,
 				2: self.exit
 			}
-			option = input('\t1: Add\n\t2: Exit\nChoose: ')
-			option = self.input_menu(option, len(switcher))
+			option = raw_input('\t1: Add\n\t2: Exit\nChoose: ')
+			option = self.raw_input_menu(option, len(switcher))
 			func = switcher.get(option, lambda: 'nothing')
 			return func()
 

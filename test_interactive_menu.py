@@ -1,5 +1,5 @@
 import pytest
-import builtins
+import __builtin__
 import os
 import json
 import time
@@ -36,12 +36,12 @@ def test_interactive_menu_no_file_add_content(monkeypatch):
 	gpg = GPGTools(key = '12345')
 
 	aux = ['1','One', 'user1', 'pass1', 'url1', 'other1']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.interactive_menu()
@@ -58,12 +58,12 @@ def test_interactive_menu_no_file_exit(monkeypatch):
 	gpg = GPGTools(key = '12345')
 
 	aux = ['2']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 
@@ -75,12 +75,12 @@ def test_interactive_menu_with_file_add_content(monkeypatch):
 					'secrets_tmp29', '12345')
 
 	aux = ['1','Two', 'user2', 'pass2', 'url2', 'other2']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.interactive_menu()
@@ -101,12 +101,12 @@ def test_interactive_menu_with_file_modify_content(monkeypatch, capsys):
 					'secrets_tmp30', '12345')
 
 	aux = ['2','One', 'user2', 'pass2', 'url2', 'other2']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.interactive_menu()
@@ -130,12 +130,12 @@ def test_interactive_menu_with_file_modify_content_delete(monkeypatch, capsys):
 					'secrets_tmp31', '12345')
 
 	aux = ['2','One', '', '', '', '']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.interactive_menu()
@@ -159,12 +159,12 @@ def test_interactive_menu_with_file_print_decrypt_content(monkeypatch, capsys):
 					'secrets_tmp32', '12345')
 
 	aux = ['3','Two', 'list', 'One','Y','N']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.interactive_menu()
@@ -179,12 +179,12 @@ def test_interactive_menu_with_file_print_decrypt_content(monkeypatch, capsys):
 					'secrets_tmp33', '12345')
 
 	aux = ['4']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.interactive_menu()
@@ -199,12 +199,12 @@ def test_update_keys(monkeypatch):
 
 	gpg = GPGTools(file = 'secrets_tmp34', key = '12345')
 	aux = ['5']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.interactive_menu()
@@ -237,12 +237,12 @@ def test_interactive_menu_no_file_exit(monkeypatch):
 					'secrets_tmp38', '12345')
 
 	aux = ['6']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 

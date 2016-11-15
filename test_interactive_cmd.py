@@ -1,5 +1,5 @@
 import pytest
-import builtins
+import __builtin__
 import os
 import json
 import pyperclip
@@ -39,12 +39,12 @@ def test_id_or_list(monkeypatch, capsys):
 					'secrets_tmp14', '12345')
 
 	aux = ['list', 'One']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.id_or_list()
@@ -62,12 +62,12 @@ def test_add_content(monkeypatch):
 					'secrets_tmp16', '12345')
 
 	aux = ['Two', 'user2', 'pass2', 'url2', 'other2']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg2)
 	icmd.add_content()
@@ -86,12 +86,12 @@ def test_add_content_no_secrets(monkeypatch):
 					'secrets_tmp17', '12345')
 
 	aux = ['One', 'user1', 'pass1', 'url1', 'other1']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.add_content()
@@ -111,12 +111,12 @@ def test_modify_content(monkeypatch, capsys):
 					'secrets_tmp19', '12345')
 
 	aux = ['One', 'user2', 'pass1', 'url1','other1']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.modify_content()
@@ -135,12 +135,12 @@ def test_modify_content_delete(monkeypatch, capsys):
 					'secrets_tmp20', '12345')
 
 	aux = ['One', '', '', '','']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.modify_content()
@@ -200,12 +200,12 @@ def test_decrypt_content_ok(monkeypatch, capsys):
 					'secrets_tmp25', '12345')
 
 	aux = ['One','Y','N']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.print_decrypt_content()
@@ -220,12 +220,12 @@ def test_decrypt_content_ko(monkeypatch, capsys):
 					'secrets_tmp26', '12345')
 
 	aux = ['One','Y','N']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.print_decrypt_content()
@@ -240,12 +240,12 @@ def test_decrypt_content_fail_id(monkeypatch, capsys):
 					'secrets_tmp27', '12345')
 
 	aux = ['Two','One','Y','N']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.print_decrypt_content()
@@ -260,12 +260,12 @@ def test_decrypt_content_copy_clipboard(monkeypatch, capsys):
 					'secrets_tmp28', '12345')
 
 	aux = ['One','N','password']
-	def mock_input_user(*args, **kwargs):
+	def mock_raw_input_user(*args, **kwargs):
 		a = aux[0]
 		del aux[0]
 		return a
 
-	monkeypatch.setattr(builtins, 'input',mock_input_user)
+	monkeypatch.setattr(__builtin__, 'raw_input',mock_raw_input_user)
 
 	icmd = InteractiveCMD(gpg)
 	icmd.print_decrypt_content()

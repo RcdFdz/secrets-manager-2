@@ -1,5 +1,5 @@
 Travis CI Testing status:
-![alt text](https://travis-ci.org/RcdFdz/secrets-manager-3.svg?branch=master "Test status")
+![alt text](https://travis-ci.org/RcdFdz/secrets-manager-2.svg?branch=master "Test status")
 
 ### Password Manager
 The aim to the present project is to solve the shared secrets problem in small teams.
@@ -28,7 +28,7 @@ The menu accepts:
 
 Command line outputs first time it runs:
 ```
-➜  secrets-manager-3 git:(master) ✗ python3 main.py -h
+➜  secrets-manager-2 git:(master) ✗ python main.py -h
 usage: main.py [-h] [-i] [-ak identifier {"user":"<user>", ...}]
 
 Manager for sensible information under PGP. Use -i/--interactive or
@@ -45,7 +45,7 @@ optional arguments:
 ```
 Command line outputs when keys exist:
 ```
-➜  secrets-manager-3 git:(refactor-class) ✗ ./main.py -h
+➜  secrets-manager-2 git:(master) ✗ ./main.py -h
 usage: main.py [-h] [-i] [-l] [-u identifier] [-p identifier] [-ur identifier]
                [-o identifier] [-a identifier]
                [-ak identifier {"user":"<user>", ...}]
@@ -83,9 +83,9 @@ optional arguments:
                         valid json string
 ```
 ### Requirements
-This projects requires python3 and GPG Suite version 2016.07 (https://gpgtools.org/) or greater.
+This projects requires python and GPG Suite version 2016.07 (https://gpgtools.org/) or greater.
 
-Also will be required to run `pip3 install -r requirements.txt`.
+Also will be required to run `pip install -r requirements.txt`.
 
 ### TODO
 
